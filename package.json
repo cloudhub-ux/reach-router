@@ -70,7 +70,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/reach/router.git"
+    "url": "git+https://github.com/gatsbyjs/reach-router.git"
   },
   "keywords": [
     "react",
@@ -85,7 +85,7 @@
     "react-lifecycles-compat": "^3.0.4"
   },
   "bugs": {
-    "url": "https://github.com/reach/router/issues"
+    "url": "https://github.com/gatsbyjs/reach-router/issues"
   },
-  "homepage": "https://github.com/reach/router#readme"
+  "homepage": "https://github.com/gatsbyjs/reach-router#readme"
 }
