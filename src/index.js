@@ -383,7 +383,7 @@ if (typeof forwardRef === "undefined") {
 
 let Link = forwardRef(({ innerRef, ...props }, ref) => (
   <BaseContext.Consumer>
-    {({ basepath, baseuri }) => (
+    {({ baseuri }) => (
       <Location>
         {({ location }) => {
           let { to, state, replace, getProps = k, ...anchorProps } = props;
@@ -518,15 +518,9 @@ const useLocation = () => {
 };
 
 const useNavigate = () => {
-  const context = useContext(BaseContext);
-
-  if (!context) {
-    throw new Error(
-      "useNavigate hook was used but a BaseContext.Provider was not found in the parent tree. Make sure this is used in a component that is a child of Router"
-    );
-  }
-
-  return context.navigate;
+  throw new Error(
+    "useNavigate is removed. Use import { navigate } from 'gatsby' instead"
+  );
 };
 
 const useParams = () => {

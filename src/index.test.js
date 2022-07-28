@@ -16,7 +16,6 @@ import {
   isRedirect,
   ServerLocation,
   useLocation,
-  useNavigate,
   useParams,
   useMatch
 } from "./index";
@@ -661,37 +660,6 @@ describe("transitions", () => {
   });
 });
 
-describe("relative navigate prop", () => {
-  it("navigates relative", async () => {
-    let relativeNavigate;
-
-    const User = ({ children, navigate, userId }) => {
-      relativeNavigate = navigate;
-      return (
-        <div>
-          User:
-          {userId}
-          {children}
-        </div>
-      );
-    };
-
-    const Settings = () => <div>Settings</div>;
-
-    const { snapshot } = runWithNavigation(
-      <Router>
-        <User path="user/:userId">
-          <Settings path="settings" />
-        </User>
-      </Router>,
-      "/user/123"
-    );
-    snapshot();
-    await relativeNavigate("settings");
-    snapshot();
-  });
-});
-
 describe("nested routers", () => {
   it("allows arbitrary Router nesting through context", () => {
     const PageWithNestedApp = () => (
@@ -910,48 +878,6 @@ describe("hooks", () => {
       }).toThrow(
         "useLocation hook was used but a LocationContext.Provider was not found in the parent tree. Make sure this is used in a component that is a child of Router"
       );
-    });
-  });
-
-  describe("useNavigate", () => {
-    it("navigates relative", async () => {
-      let navigate;
-
-      const Foo = () => {
-        navigate = useNavigate();
-        return `IF_THIS_IS_IN_SNAPSHOT_BAAAAADDDDDDDD`;
-      };
-
-      const Bar = () => `THIS_IS_WHAT_WE_WANT_TO_SEE_IN_SNAPSHOT`;
-
-      const { snapshot } = runWithNavigation(
-        <Router>
-          <Foo path="/foo" />
-          <Bar path="/bar" />
-        </Router>,
-        "/foo"
-      );
-      snapshot();
-      await navigate("/bar");
-      snapshot();
-    });
-    it("is equals to props.navigate for route components", async () => {
-      let navigate;
-      let propNavigate;
-
-      const Foo = props => {
-        navigate = useNavigate();
-        propNavigate = props.navigate;
-        return `Foo`;
-      };
-
-      runWithNavigation(
-        <Router>
-          <Foo path="/foo" />
-        </Router>,
-        "/foo"
-      );
-      expect(navigate).toBe(propNavigate);
     });
   });
 

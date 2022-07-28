@@ -104,32 +104,6 @@ exports[`hooks useLocation returns the location 1`] = `
 </div>
 `;
 
-exports[`hooks useNavigate navigates relative 1`] = `
-<div
-  style={
-    Object {
-      "outline": "none",
-    }
-  }
-  tabIndex="-1"
->
-  IF_THIS_IS_IN_SNAPSHOT_BAAAAADDDDDDDD
-</div>
-`;
-
-exports[`hooks useNavigate navigates relative 2`] = `
-<div
-  style={
-    Object {
-      "outline": "none",
-    }
-  }
-  tabIndex="-1"
->
-  THIS_IS_WHAT_WE_WANT_TO_SEE_IN_SNAPSHOT
-</div>
-`;
-
 exports[`hooks useParams gives an object of the params from the route 1`] = `
 <div
   style={
@@ -669,50 +643,6 @@ exports[`passed props shadows params in nested paths 1`] = `
       <div>
         Group: 
         milkshake
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`relative navigate prop navigates relative 1`] = `
-<div
-  style={
-    Object {
-      "outline": "none",
-    }
-  }
-  tabIndex="-1"
->
-  <div>
-    User:
-    123
-  </div>
-</div>
-`;
-
-exports[`relative navigate prop navigates relative 2`] = `
-<div
-  style={
-    Object {
-      "outline": "none",
-    }
-  }
-  tabIndex="-1"
->
-  <div>
-    User:
-    123
-    <div
-      style={
-        Object {
-          "outline": "none",
-        }
-      }
-      tabIndex="-1"
-    >
-      <div>
-        Settings
       </div>
     </div>
   </div>
