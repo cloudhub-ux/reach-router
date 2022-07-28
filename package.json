@@ -13,6 +13,7 @@
   "scripts": {
     "build": "node build/build.js",
     "watch": "watch -p \"src/**/*.js\" -c \"yarn build\"",
+    "prepare": "npm run clean && npm run build",
     "test": "jest",
     "clean": "rm -rf lib es umd index.js",
     "precommit": "pretty-quick --staged",

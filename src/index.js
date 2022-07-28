@@ -62,19 +62,14 @@ class LocationProvider extends React.Component {
   getContext() {
     let {
       props: {
-        history: { navigate, location }
+        history: { location }
       }
     } = this;
-    return { navigate, location };
+    return { location };
   }
 
   componentDidCatch(error, info) {
     if (isRedirect(error)) {
-      let {
-        props: {
-          history: { navigate }
-        }
-      } = this;
       navigate(error.uri, { replace: true });
     } else {
       throw error;
@@ -148,9 +143,6 @@ let ServerLocation = ({ url, children }) => {
           pathname,
           search,
           hash
-        },
-        navigate: () => {
-          throw new Error("You can't call navigate on the server.");
         }
       }}
     >
@@ -162,8 +154,7 @@ let ServerLocation = ({ url, children }) => {
 // Sets baseuri and basepath for nested routers and links
 let BaseContext = createNamedContext("Base", {
   baseuri: "/",
-  basepath: "/",
-  navigate: globalHistory.navigate
+  basepath: "/"
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +179,6 @@ class RouterImpl extends React.PureComponent {
   render() {
     let {
       location,
-      navigate,
       basepath,
       primary,
       children,
@@ -218,8 +208,7 @@ class RouterImpl extends React.PureComponent {
       let props = {
         ...params,
         uri,
-        location,
-        navigate: (to, options) => navigate(resolve(to, uri), options)
+        location
       };
 
       let clone = React.cloneElement(
@@ -242,9 +231,7 @@ class RouterImpl extends React.PureComponent {
         : domProps;
 
       return (
-        <BaseContext.Provider
-          value={{ baseuri: uri, basepath, navigate: props.navigate }}
-        >
+        <BaseContext.Provider value={{ baseuri: uri, basepath }}>
           <FocusWrapper {...wrapperProps}>{clone}</FocusWrapper>
         </BaseContext.Provider>
       );
@@ -398,7 +385,7 @@ let Link = forwardRef(({ innerRef, ...props }, ref) => (
   <BaseContext.Consumer>
     {({ basepath, baseuri }) => (
       <Location>
-        {({ location, navigate }) => {
+        {({ location }) => {
           let { to, state, replace, getProps = k, ...anchorProps } = props;
           let href = resolve(to, baseuri);
           let encodedHref = encodeURI(href);
@@ -456,16 +443,7 @@ class RedirectImpl extends React.Component {
   // Support React < 16 with this hook
   componentDidMount() {
     let {
-      props: {
-        navigate,
-        to,
-        from,
-        replace = true,
-        state,
-        noThrow,
-        baseuri,
-        ...props
-      }
+      props: { to, from, replace = true, state, noThrow, baseuri, ...props }
     } = this;
     Promise.resolve().then(() => {
       let resolvedTo = resolve(to, baseuri);
@@ -475,7 +453,7 @@ class RedirectImpl extends React.Component {
 
   render() {
     let {
-      props: { navigate, to, from, replace, state, noThrow, baseuri, ...props }
+      props: { to, from, replace, state, noThrow, baseuri, ...props }
     } = this;
     let resolvedTo = resolve(to, baseuri);
     if (!noThrow) redirectTo(insertParams(resolvedTo, props));
@@ -505,11 +483,10 @@ let Match = ({ path, children }) => (
   <BaseContext.Consumer>
     {({ baseuri }) => (
       <Location>
-        {({ navigate, location }) => {
+        {({ location }) => {
           let resolvedPath = resolve(path, baseuri);
           let result = match(resolvedPath, location.pathname);
           return children({
-            navigate,
             location,
             match: result
               ? {
