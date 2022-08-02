@@ -406,6 +406,15 @@ describe("disrespect", () => {
 });
 
 describe("links", () => {
+  beforeEach(() => {
+    window.history.pushState = jest.fn();
+    window.history.replaceState = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it("accepts an innerRef prop", done => {
     let ref;
     let div = document.createElement("div");
@@ -493,8 +502,6 @@ describe("links", () => {
   });
 
   it("calls history.pushState when clicked", () => {
-    window.history.replaceState = jest.fn();
-    window.history.pushState = jest.fn();
     const SomePage = () => <Link to="/reports">Go To Reports</Link>;
     const div = document.createElement("div");
     ReactDOM.render(
@@ -516,8 +523,6 @@ describe("links", () => {
   });
 
   it("calls history.pushState when clicked -- even if navigated before", () => {
-    window.history.pushState = jest.fn();
-    window.history.replaceState = jest.fn();
     navigate("/", { replace: true });
     expect(window.history.replaceState).toHaveBeenCalled();
     const SomePage = () => <Link to="/reports">Go To Reports</Link>;
