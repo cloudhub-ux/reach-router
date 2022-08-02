@@ -6,6 +6,7 @@ import renderer from "react-test-renderer";
 import { renderToString, renderToStaticMarkup } from "react-dom/server";
 
 import {
+  navigate,
   createHistory,
   createMemorySource,
   Router,
@@ -492,14 +493,12 @@ describe("links", () => {
   });
 
   it("calls history.pushState when clicked", () => {
-    const testSource = createMemorySource("/");
-    testSource.history.replaceState = jest.fn();
-    testSource.history.pushState = jest.fn();
-    const testHistory = createHistory(testSource);
+    window.history.replaceState = jest.fn();
+    window.history.pushState = jest.fn();
     const SomePage = () => <Link to="/reports">Go To Reports</Link>;
     const div = document.createElement("div");
     ReactDOM.render(
-      <LocationProvider history={testHistory}>
+      <LocationProvider>
         <Router>
           <SomePage path="/" />
           <Reports path="/reports" />
@@ -510,26 +509,21 @@ describe("links", () => {
     try {
       const a = div.querySelector("a");
       ReactTestUtils.Simulate.click(a, { button: 0 });
-      expect(testSource.history.pushState).toHaveBeenCalled();
+      expect(window.history.pushState).toHaveBeenCalled();
     } finally {
       ReactDOM.unmountComponentAtNode(div);
     }
   });
 
   it("calls history.pushState when clicked -- even if navigated before", () => {
-    const testSource = createMemorySource("/#payload=...");
-    const { history } = testSource;
-    history.replaceState = jest.fn(history.replaceState.bind(history));
-    history.pushState = jest.fn(history.pushState.bind(history));
-    const testHistory = createHistory(testSource);
-    // Simulate that payload in URL hash is being hidden
-    // before React renders anything ...
-    testHistory.navigate("/", { replace: true });
-    expect(testSource.history.replaceState).toHaveBeenCalled();
+    window.history.pushState = jest.fn();
+    window.history.replaceState = jest.fn();
+    navigate("/", { replace: true });
+    expect(window.history.replaceState).toHaveBeenCalled();
     const SomePage = () => <Link to="/reports">Go To Reports</Link>;
     const div = document.createElement("div");
     ReactDOM.render(
-      <LocationProvider history={testHistory}>
+      <LocationProvider>
         <Router>
           <SomePage path="/" />
           <Reports path="/reports" />
@@ -540,7 +534,7 @@ describe("links", () => {
     try {
       const a = div.querySelector("a");
       ReactTestUtils.Simulate.click(a, { button: 0 });
-      expect(testSource.history.pushState).toHaveBeenCalled();
+      expect(window.history.pushState).toHaveBeenCalled();
     } finally {
       ReactDOM.unmountComponentAtNode(div);
     }
