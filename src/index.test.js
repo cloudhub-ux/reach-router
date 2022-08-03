@@ -546,14 +546,12 @@ describe("links", () => {
   });
 
   it("calls history.replaceState when link for current path is clicked without state", () => {
-    const testSource = createMemorySource("/test");
-    const testHistory = createHistory(testSource);
-    const TestPage = () => <Link to="/test">Go To Test</Link>;
+    const TestPage = () => <Link to="/">Go To Test</Link>;
     const div = document.createElement("div");
     ReactDOM.render(
-      <LocationProvider history={testHistory}>
+      <LocationProvider>
         <Router>
-          <TestPage path="/test" />
+          <TestPage path="/" />
         </Router>
       </LocationProvider>,
       div
@@ -567,19 +565,17 @@ describe("links", () => {
     }
   });
   it("calls history.replaceState when link for current path is clicked with the same state", () => {
-    const testSource = createMemorySource("/test");
-    const testHistory = createHistory(testSource);
-    testHistory.navigate("/test", { state: { id: "123" } });
+    navigate("/", { state: { id: "123" } });
     const TestPage = () => (
-      <Link to="/test" state={{ id: "123" }}>
+      <Link to="/" state={{ id: "123" }}>
         Go To Test
       </Link>
     );
     const div = document.createElement("div");
     ReactDOM.render(
-      <LocationProvider history={testHistory}>
+      <LocationProvider>
         <Router>
-          <TestPage path="/test" />
+          <TestPage path="/" />
         </Router>
       </LocationProvider>,
       div
@@ -593,18 +589,16 @@ describe("links", () => {
     }
   });
   it("calls history.pushState when link for current path is clicked with different state", async () => {
-    const testSource = createMemorySource("/test");
-    const testHistory = createHistory(testSource);
     const TestPage = () => (
-      <Link to="/test" state={{ id: 1 }}>
+      <Link to="/" state={{ id: 1 }}>
         Go To Test
       </Link>
     );
     const div = document.createElement("div");
     ReactDOM.render(
-      <LocationProvider history={testHistory}>
+      <LocationProvider>
         <Router>
-          <TestPage path="/test" />
+          <TestPage path="/" />
         </Router>
       </LocationProvider>,
       div
@@ -612,7 +606,7 @@ describe("links", () => {
     try {
       const a = div.querySelector("a");
       ReactTestUtils.Simulate.click(a, { button: 0 });
-      navigate("/test", { state: { id: 2 } });
+      navigate("/", { state: { id: 2 } });
       ReactTestUtils.Simulate.click(a, { button: 0 });
       expect(window.history.pushState).toHaveBeenCalledTimes(2);
     } finally {
