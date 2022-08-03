@@ -606,7 +606,7 @@ describe("links", () => {
     try {
       const a = div.querySelector("a");
       ReactTestUtils.Simulate.click(a, { button: 0 });
-      navigate("/", { state: { id: 2 } });
+      await navigate("/", { state: { id: 2 } });
       ReactTestUtils.Simulate.click(a, { button: 0 });
       expect(window.history.pushState).toHaveBeenCalledTimes(2);
     } finally {
