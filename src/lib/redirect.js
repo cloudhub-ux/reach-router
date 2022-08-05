@@ -15,26 +15,23 @@ let redirectTo = to => {
   throw new RedirectRequest(to);
 };
 
-class RedirectImpl extends React.Component {
-  // Support React < 16 with this hook
-  componentDidMount() {
-    let {
-      props: { to, from, replace = true, state, noThrow, baseuri, ...props }
-    } = this;
+function RedirectImpl(props) {
+  let { to, replace = true, state, noThrow, baseuri } = props;
+
+  React.useEffect(() => {
     Promise.resolve().then(() => {
       let resolvedTo = resolve(to, baseuri);
       navigate(insertParams(resolvedTo, props), { replace, state });
     });
+  }, [resolve, navigate, insertParams]);
+
+  let resolvedTo = resolve(to, baseuri);
+
+  if (!noThrow) {
+    redirectTo(insertParams(resolvedTo, props));
   }
 
-  render() {
-    let {
-      props: { to, from, replace, state, noThrow, baseuri, ...props }
-    } = this;
-    let resolvedTo = resolve(to, baseuri);
-    if (!noThrow) redirectTo(insertParams(resolvedTo, props));
-    return null;
-  }
+  return null;
 }
 
 let Redirect = props => (
