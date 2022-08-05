@@ -1,4 +1,10 @@
-import { pick, match, resolve, insertParams, shallowCompare } from "./utils";
+import {
+  pick,
+  match,
+  resolve,
+  insertParams,
+  shallowCompare
+} from "../../lib/utils";
 
 describe("pick", () => {
   test("pick root or dynamic", () => {
