@@ -2,7 +2,7 @@ import { useBaseContext } from "../lib/hooks-context"
 import { match } from "../lib/utils"
 import { useLocation } from "./use-location"
 
-const useParams = () => {
+export const useParams = () => {
   const context = useBaseContext()
 
   if (!context) {
@@ -17,5 +17,3 @@ const useParams = () => {
 
   return results ? results.params : null
 }
-
-export { useParams }

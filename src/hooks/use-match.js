@@ -2,7 +2,7 @@ import { useBaseContext } from "../lib/hooks-context"
 import { resolve, match } from "../lib/utils"
 import { useLocation } from "./use-location"
 
-const useMatch = path => {
+export const useMatch = path => {
   if (!path) {
     throw new Error(
       "useMatch(path: string) requires an argument of a string to match against"
@@ -28,5 +28,3 @@ const useMatch = path => {
       }
     : null
 }
-
-export { useMatch }

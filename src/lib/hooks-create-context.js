@@ -21,6 +21,7 @@ const createNamedContextServer = (name, defaultValue = null) => {
   return context
 }
 
+// TODO: Conditionally use client & server contexts
 export const createNamedContext = (name, defaultValue = null) => createNamedContextServer(name, defaultValue)
 
 export const BaseContext = createNamedContext("Base", {

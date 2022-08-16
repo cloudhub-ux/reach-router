@@ -1,6 +1,6 @@
 import { useLocationContext } from "../lib/hooks-context"
 
-const useLocation = () => {
+export const useLocation = () => {
   const context = useLocationContext()
 
   if (!context) {
@@ -11,5 +11,3 @@ const useLocation = () => {
 
   return context.location
 }
-
-export { useLocation }
