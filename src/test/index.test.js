@@ -21,9 +21,9 @@ import {
   useMatch,
 } from "../index"
 
-let snapshot = ({ pathname, element }) => {
-  let testHistory = createHistory(createMemorySource(pathname))
-  let wrapper = renderer.create(
+const snapshot = ({ pathname, element }) => {
+  const testHistory = createHistory(createMemorySource(pathname))
+  const wrapper = renderer.create(
     <LocationProvider history={testHistory}>{element}</LocationProvider>
   )
   const tree = wrapper.toJSON()
@@ -31,9 +31,9 @@ let snapshot = ({ pathname, element }) => {
   return tree
 }
 
-let runWithNavigation = (element, pathname = "/") => {
-  let history = createHistory(createMemorySource(pathname))
-  let wrapper = renderer.create(
+const runWithNavigation = (element, pathname = "/") => {
+  const history = createHistory(createMemorySource(pathname))
+  const wrapper = renderer.create(
     <LocationProvider history={history}>{element}</LocationProvider>
   )
 
@@ -43,18 +43,18 @@ let runWithNavigation = (element, pathname = "/") => {
   return { history, snapshot, wrapper }
 }
 
-let Home = () => <div>Home</div>
-let Dash = ({ children }) => <div>Dash {children}</div>
-let Group = ({ groupId, children }) => (
+const Home = () => <div>Home</div>
+const Dash = ({ children }) => <div>Dash {children}</div>
+const Group = ({ groupId, children }) => (
   <div>
     Group: {groupId}
     {children}
   </div>
 )
-let PropsPrinter = props => <pre>{JSON.stringify(props, null, 2)}</pre>
-let Reports = ({ children }) => <div>Reports {children}</div>
-let AnnualReport = () => <div>Annual Report</div>
-let PrintLocation = ({ location }) => (
+const PropsPrinter = props => <pre>{JSON.stringify(props, null, 2)}</pre>
+const Reports = ({ children }) => <div>Reports {children}</div>
+const AnnualReport = () => <div>Annual Report</div>
+const PrintLocation = ({ location }) => (
   <div>
     <div>location.pathname: [{location.pathname}]</div>
     <div>location.search: [{location.search}]</div>
@@ -417,7 +417,7 @@ describe("links", () => {
 
   it("accepts an innerRef prop", done => {
     let ref
-    let div = document.createElement("div")
+    const div = document.createElement("div")
     ReactDOM.render(
       <Link to="/" innerRef={node => (ref = node)} />,
       div,
@@ -431,7 +431,7 @@ describe("links", () => {
 
   it("forwards refs", done => {
     let ref
-    let div = document.createElement("div")
+    const div = document.createElement("div")
     ReactDOM.render(<Link to="/" ref={node => (ref = node)} />, div, () => {
       expect(ref).toBeInstanceOf(HTMLAnchorElement)
       ReactDOM.unmountComponentAtNode(div)
@@ -693,10 +693,10 @@ describe("Match", () => {
 
 describe("location", () => {
   it("correctly parses pathname, search and hash fields", () => {
-    let testHistory = createHistory(
+    const testHistory = createHistory(
       createMemorySource("/print-location?it=works&with=queries")
     )
-    let wrapper = renderer.create(
+    const wrapper = renderer.create(
       <LocationProvider history={testHistory}>
         <Router>
           <PrintLocation path="/print-location" />
@@ -711,13 +711,13 @@ describe("location", () => {
 // React 16.4 is buggy https://github.com/facebook/react/issues/12968
 // so some tests are skipped
 describe("ServerLocation", () => {
-  let NestedRouter = () => (
+  const NestedRouter = () => (
     <Router>
       <Home path="/home" />
       <Redirect from="/" to="./home" />
     </Router>
   )
-  let App = () => (
+  const App = () => (
     <Router>
       <Home path="/" />
       <Group path="/groups/:groupId" />
@@ -746,7 +746,7 @@ describe("ServerLocation", () => {
   })
 
   test.skip("redirects", () => {
-    let redirectedPath = "/g/123"
+    const redirectedPath = "/g/123"
     let markup
     try {
       markup = renderToString(
@@ -762,7 +762,7 @@ describe("ServerLocation", () => {
   })
 
   test.skip("nested redirects", () => {
-    let redirectedPath = "/nested"
+    const redirectedPath = "/nested"
     let markup
     try {
       markup = renderToString(
@@ -778,7 +778,7 @@ describe("ServerLocation", () => {
   })
 
   test("location.search", () => {
-    let markup = renderToStaticMarkup(
+    const markup = renderToStaticMarkup(
       <ServerLocation url="/print-location?it=works">
         <App />
       </ServerLocation>

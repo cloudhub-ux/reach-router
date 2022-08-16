@@ -1,21 +1,20 @@
 import * as React from "react"
-import { createNamedContext } from "./context-create-named"
+import { useFocusContext } from "./hooks-context"
+import { FocusContext } from "./hooks-create-context"
 
-let FocusContext = createNamedContext("Focus")
+export const FocusHandler = ({ uri, location, component, ...domProps }) => {
+  const requestFocus = useFocusContext()
 
-let FocusHandler = ({ uri, location, component, ...domProps }) => (
-  <FocusContext.Consumer>
-    {requestFocus => (
-      <FocusHandlerImpl
-        {...domProps}
-        component={component}
-        requestFocus={requestFocus}
-        uri={uri}
-        location={location}
-      />
-    )}
-  </FocusContext.Consumer>
-)
+  return (
+    <FocusHandlerImpl
+      {...domProps}
+      component={component}
+      requestFocus={requestFocus}
+      uri={uri}
+      location={location}
+    />
+  )
+}
 
 // don't focus on initial render
 let initialRender = true
@@ -25,15 +24,15 @@ class FocusHandlerImpl extends React.Component {
   state = {}
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    let initial = prevState.uri == null
+    const initial = prevState.uri == null
     if (initial) {
       return {
         shouldFocus: true,
         ...nextProps,
       }
     } else {
-      let myURIChanged = nextProps.uri !== prevState.uri
-      let navigatedUpToMe =
+      const myURIChanged = nextProps.uri !== prevState.uri
+      const navigatedUpToMe =
         prevState.location.pathname !== nextProps.location.pathname &&
         nextProps.location.pathname === nextProps.uri
       return {
@@ -69,7 +68,7 @@ class FocusHandlerImpl extends React.Component {
       return
     }
 
-    let { requestFocus } = this.props
+    const { requestFocus } = this.props
 
     if (requestFocus) {
       requestFocus(this.node)
@@ -93,7 +92,7 @@ class FocusHandlerImpl extends React.Component {
   }
 
   render() {
-    let {
+    const {
       children,
       style,
       requestFocus,
@@ -117,5 +116,3 @@ class FocusHandlerImpl extends React.Component {
     )
   }
 }
-
-export { FocusHandler }

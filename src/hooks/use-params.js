@@ -1,10 +1,9 @@
-import { useContext } from "react"
-import { BaseContext } from "../lib/context-base"
+import { useBaseContext } from "../lib/hooks-context"
 import { match } from "../lib/utils"
 import { useLocation } from "./use-location"
 
 const useParams = () => {
-  const context = useContext(BaseContext)
+  const context = useBaseContext()
 
   if (!context) {
     throw new Error(

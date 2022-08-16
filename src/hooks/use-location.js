@@ -1,8 +1,7 @@
-import { useContext } from "react"
-import { LocationContext } from "../lib/context-location"
+import { useLocationContext } from "../lib/hooks-context"
 
 const useLocation = () => {
-  const context = useContext(LocationContext)
+  const context = useLocationContext()
 
   if (!context) {
     throw new Error(

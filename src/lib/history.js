@@ -1,4 +1,4 @@
-let getLocation = source => {
+const getLocation = source => {
   const { search, hash, href, origin, protocol, host, hostname, port } =
     source.location
   let { pathname } = source.location
@@ -23,7 +23,7 @@ let getLocation = source => {
   }
 }
 
-let createHistory = (source, options) => {
+const createHistory = (source, options) => {
   let listeners = []
   let location = getLocation(source)
   let transitioning = false
@@ -46,7 +46,7 @@ let createHistory = (source, options) => {
     listen(listener) {
       listeners.push(listener)
 
-      let popstateListener = () => {
+      const popstateListener = () => {
         location = getLocation(source)
         listener({ location, action: "POP" })
       }
@@ -78,7 +78,7 @@ let createHistory = (source, options) => {
 
       location = getLocation(source)
       transitioning = true
-      let transition = new Promise(res => (resolveTransition = res))
+      const transition = new Promise(res => (resolveTransition = res))
       listeners.forEach(listener => listener({ location, action: "PUSH" }))
       return transition
     },
@@ -86,16 +86,16 @@ let createHistory = (source, options) => {
 }
 
 // Stores history entries in memory for testing or other platforms like Native
-let createMemorySource = (initialPath = "/") => {
-  let searchIndex = initialPath.indexOf("?")
-  let initialLocation = {
+const createMemorySource = (initialPath = "/") => {
+  const searchIndex = initialPath.indexOf("?")
+  const initialLocation = {
     pathname:
       searchIndex > -1 ? initialPath.substr(0, searchIndex) : initialPath,
     search: searchIndex > -1 ? initialPath.substr(searchIndex) : "",
   }
   let index = 0
-  let stack = [initialLocation]
-  let states = [null]
+  const stack = [initialLocation]
+  const states = [null]
 
   return {
     get location() {
@@ -114,18 +114,18 @@ let createMemorySource = (initialPath = "/") => {
         return states[index]
       },
       pushState(state, _, uri) {
-        let [pathname, search = ""] = uri.split("?")
+        const [pathname, search = ""] = uri.split("?")
         index++
         stack.push({ pathname, search: search.length ? `?${search}` : search })
         states.push(state)
       },
       replaceState(state, _, uri) {
-        let [pathname, search = ""] = uri.split("?")
+        const [pathname, search = ""] = uri.split("?")
         stack[index] = { pathname, search }
         states[index] = state
       },
       go(to) {
-        let newIndex = index + to
+        const newIndex = index + to
 
         if (newIndex < 0 || newIndex > states.length - 1) {
           return
@@ -139,16 +139,16 @@ let createMemorySource = (initialPath = "/") => {
 
 // global history - uses window.history as the source if available, otherwise a
 // memory history
-let canUseDOM = !!(
+const canUseDOM = !!(
   typeof window !== "undefined" &&
   window.document &&
   window.document.createElement
 )
-let getSource = () => {
+const getSource = () => {
   return canUseDOM ? window : createMemorySource()
 }
 
-let globalHistory = createHistory(getSource())
-let { navigate } = globalHistory
+const globalHistory = createHistory(getSource())
+const { navigate } = globalHistory
 
 export { globalHistory, navigate, createHistory, createMemorySource }

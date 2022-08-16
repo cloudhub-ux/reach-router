@@ -1,29 +1,22 @@
-import * as React from "react"
-import { BaseContext } from "./context-base"
-import { Location } from "./location"
+import { useBaseContext, useLocationContext } from "./hooks-context"
 import { resolve, match } from "./utils"
 
-let Match = ({ path, children }) => (
-  <BaseContext.Consumer>
-    {({ baseuri }) => (
-      <Location>
-        {({ location }) => {
-          let resolvedPath = resolve(path, baseuri)
-          let result = match(resolvedPath, location.pathname)
-          return children({
-            location,
-            match: result
-              ? {
-                  ...result.params,
-                  uri: result.uri,
-                  path,
-                }
-              : null,
-          })
-        }}
-      </Location>
-    )}
-  </BaseContext.Consumer>
-)
+const Match = ({ path, children }) => {
+  const { baseuri } = useBaseContext()
+  const { location } = useLocationContext()
+
+  const resolvedPath = resolve(path, baseuri)
+  const result = match(resolvedPath, location.pathname)
+  return children({
+    location,
+    match: result
+      ? {
+          ...result.params,
+          uri: result.uri,
+          path,
+        }
+      : null,
+  })
+}
 
 export { Match }

@@ -1,5 +1,4 @@
-import { useContext } from "react"
-import { BaseContext } from "../lib/context-base"
+import { useBaseContext } from "../lib/hooks-context"
 import { resolve, match } from "../lib/utils"
 import { useLocation } from "./use-location"
 
@@ -9,7 +8,7 @@ const useMatch = path => {
       "useMatch(path: string) requires an argument of a string to match against"
     )
   }
-  const context = useContext(BaseContext)
+  const context = useBaseContext()
 
   if (!context) {
     throw new Error(

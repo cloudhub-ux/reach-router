@@ -1,41 +1,38 @@
 import * as React from "react"
-import { BaseContext } from "./context-base"
-import { Location } from "./location"
+import { BaseContext } from "./hooks-create-context"
 import { createRoute, pick } from "./utils"
-import { FocusHandler } from "./context-focus"
+import { FocusHandler } from "./focus-handler"
+import { useBaseContext, useLocationContext } from "./hooks-context"
 
-let Router = props => (
-  <BaseContext.Consumer>
-    {baseContext => (
-      <Location>
-        {locationContext => (
-          <RouterImpl {...baseContext} {...locationContext} {...props} />
-        )}
-      </Location>
-    )}
-  </BaseContext.Consumer>
-)
+export const Router = props => {
+  const baseContext = useBaseContext()
+  const locationContext = useLocationContext()
+
+  return (
+    <RouterImpl {...baseContext} {...locationContext} {...props} />
+  )
+}
 
 function RouterImpl(props) {
-  let {
+  const {
     location,
-    basepath,
     primary = true,
     children,
     baseuri,
     component = "div",
     ...domProps
   } = props
+  let { basepath } = props
 
-  let routes = React.Children.toArray(children).reduce((array, child) => {
+  const routes = React.Children.toArray(children).reduce((array, child) => {
     const routes = createRoute(basepath)(child)
     return array.concat(routes)
   }, [])
-  let { pathname } = location
-  let match = pick(routes, pathname)
+  const { pathname } = location
+  const match = pick(routes, pathname)
 
   if (match) {
-    let {
+    const {
       params,
       uri,
       route,
@@ -45,13 +42,13 @@ function RouterImpl(props) {
     // remove the /* from the end for child routes relative paths
     basepath = route.default ? basepath : route.path.replace(/\*$/, "")
 
-    let props = {
+    const props = {
       ...params,
       uri,
       location,
     }
 
-    let clone = React.cloneElement(
+    const clone = React.cloneElement(
       element,
       props,
       element.props.children ? (
@@ -62,9 +59,9 @@ function RouterImpl(props) {
     )
 
     // using 'div' for < 16.3 support
-    let FocusWrapper = primary ? FocusHandler : component
+    const FocusWrapper = primary ? FocusHandler : component
     // don't pass any props to 'div'
-    let wrapperProps = primary
+    const wrapperProps = primary
       ? { uri, location, component, ...domProps }
       : domProps
 
@@ -77,5 +74,3 @@ function RouterImpl(props) {
     return null
   }
 }
-
-export { Router }

@@ -3,7 +3,14 @@
   "globals": {
     "__DEV__": true
   },
+  "plugins": ["import"],
   "rules": {
-    "react/prop-types": ["warn"]
+    "react/prop-types": ["off"],
+    "prefer-const": ["warn"],
+    "import/no-unresolved": [2, { "commonjs": true, "amd": true }],
+    "import/named": 2,
+    "import/namespace": 2,
+    "import/default": 2,
+    "import/export": 2
   }
 }

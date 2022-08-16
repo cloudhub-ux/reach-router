@@ -1,12 +1,12 @@
 import * as React from "react"
-import { LocationContext } from "./context-location"
+import { LocationContext } from "./hooks-create-context"
 
-let ServerLocation = ({ url, children }) => {
-  let searchIndex = url.indexOf("?")
-  let searchExists = searchIndex > -1
+export const ServerLocation = ({ url, children }) => {
+  const searchIndex = url.indexOf("?")
+  const searchExists = searchIndex > -1
   let pathname
   let search = ""
-  let hash = ""
+  const hash = ""
 
   if (searchExists) {
     pathname = url.substring(0, searchIndex)
@@ -29,5 +29,3 @@ let ServerLocation = ({ url, children }) => {
     </LocationContext.Provider>
   )
 }
-
-export { ServerLocation }

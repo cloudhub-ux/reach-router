@@ -2,7 +2,7 @@ import * as React from "react"
 import PropTypes from "prop-types"
 import { globalHistory, navigate } from "./history"
 import { isRedirect } from "./redirect"
-import { LocationContext } from "./context-location"
+import { LocationContext } from "./hooks-create-context"
 
 class LocationProvider extends React.Component {
   static propTypes = {
@@ -19,7 +19,7 @@ class LocationProvider extends React.Component {
   }
 
   getContext() {
-    let {
+    const {
       props: {
         history: { location },
       },
@@ -42,7 +42,7 @@ class LocationProvider extends React.Component {
   }
 
   componentDidMount() {
-    let {
+    const {
       state: { refs },
       props: { history },
     } = this
@@ -60,7 +60,7 @@ class LocationProvider extends React.Component {
   }
 
   componentWillUnmount() {
-    let {
+    const {
       state: { refs },
     } = this
     this.unmounted = true
@@ -68,7 +68,7 @@ class LocationProvider extends React.Component {
   }
 
   render() {
-    let {
+    const {
       state: { context },
       props: { children },
     } = this
