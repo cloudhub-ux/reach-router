@@ -1,8 +1,8 @@
-import { createNamedContext } from "./context-create-named";
+import { createNamedContext } from "./context-create-named"
 
 let BaseContext = createNamedContext("Base", {
   baseuri: "/",
-  basepath: "/"
-});
+  basepath: "/",
+})
 
-export { BaseContext };
+export { BaseContext }

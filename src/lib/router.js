@@ -1,8 +1,8 @@
-import * as React from "react";
-import { BaseContext } from "./context-base";
-import { Location } from "./location";
-import { createRoute, pick } from "./utils";
-import { FocusHandler } from "./context-focus";
+import * as React from "react"
+import { BaseContext } from "./context-base"
+import { Location } from "./location"
+import { createRoute, pick } from "./utils"
+import { FocusHandler } from "./context-focus"
 
 let Router = props => (
   <BaseContext.Consumer>
@@ -14,7 +14,7 @@ let Router = props => (
       </Location>
     )}
   </BaseContext.Consumer>
-);
+)
 
 function RouterImpl(props) {
   let {
@@ -25,31 +25,31 @@ function RouterImpl(props) {
     baseuri,
     component = "div",
     ...domProps
-  } = props;
+  } = props
 
   let routes = React.Children.toArray(children).reduce((array, child) => {
-    const routes = createRoute(basepath)(child);
-    return array.concat(routes);
-  }, []);
-  let { pathname } = location;
-  let match = pick(routes, pathname);
+    const routes = createRoute(basepath)(child)
+    return array.concat(routes)
+  }, [])
+  let { pathname } = location
+  let match = pick(routes, pathname)
 
   if (match) {
     let {
       params,
       uri,
       route,
-      route: { value: element }
-    } = match;
+      route: { value: element },
+    } = match
 
     // remove the /* from the end for child routes relative paths
-    basepath = route.default ? basepath : route.path.replace(/\*$/, "");
+    basepath = route.default ? basepath : route.path.replace(/\*$/, "")
 
     let props = {
       ...params,
       uri,
-      location
-    };
+      location,
+    }
 
     let clone = React.cloneElement(
       element,
@@ -58,26 +58,24 @@ function RouterImpl(props) {
         <Router location={location} primary={primary}>
           {element.props.children}
         </Router>
-      ) : (
-        undefined
-      )
-    );
+      ) : undefined
+    )
 
     // using 'div' for < 16.3 support
-    let FocusWrapper = primary ? FocusHandler : component;
+    let FocusWrapper = primary ? FocusHandler : component
     // don't pass any props to 'div'
     let wrapperProps = primary
       ? { uri, location, component, ...domProps }
-      : domProps;
+      : domProps
 
     return (
       <BaseContext.Provider value={{ baseuri: uri, basepath }}>
         <FocusWrapper {...wrapperProps}>{clone}</FocusWrapper>
       </BaseContext.Provider>
-    );
+    )
   } else {
-    return null;
+    return null
   }
 }
 
-export { Router };
+export { Router }
