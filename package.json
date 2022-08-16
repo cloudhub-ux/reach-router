@@ -23,7 +23,9 @@
       "__DEV__": true
     },
     "testRegex": ".+\\.test\\.js$",
-    "testURL": "http://localhost"
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    }
   },
   "peerDependencies": {
     "react": "18.x",
@@ -47,8 +49,8 @@
     "microbundle": "^0.15.0",
     "prettier": "^2.7.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-test-renderer": "^18.2.0"
+    "react-dom": "experimental",
+    "react-test-renderer": "experimental"
   },
   "author": "Ryan Florence",
   "license": "MIT",
