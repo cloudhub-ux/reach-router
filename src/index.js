@@ -1,4 +1,5 @@
 export { Link } from "./lib/link"
+export { Location } from "./lib/location"
 export { LocationProvider } from "./lib/location-provider"
 export { ServerLocation } from "./lib/location-server"
 export { Match } from "./lib/match"

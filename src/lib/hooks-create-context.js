@@ -1,7 +1,7 @@
-import { createContext, createServerContext } from "react"
+import * as React from "react"
 
 const createNamedContextClient = (name, defaultValue = null) => {
-  const Ctx = createContext(defaultValue)
+  const Ctx = React.createContext(defaultValue)
   Ctx.displayName = name
   return Ctx
 }
@@ -15,7 +15,7 @@ const createNamedContextServer = (name, defaultValue = null) => {
     return context
   }
 
-  context = createServerContext(name, defaultValue)
+  context = React.createServerContext(name, defaultValue)
   ServerContextMap.set(name, context)
 
   return context
