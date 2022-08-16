@@ -1,16 +1,16 @@
-import { createMemorySource, createHistory } from "./history";
+import { createMemorySource, createHistory } from "./history"
 
 describe("createMemorySource", () => {
   it("creates a memory source with correct pathname", () => {
-    const testHistory = createMemorySource("/test");
-    expect(testHistory.location.pathname).toBe("/test");
-  });
+    const testHistory = createMemorySource("/test")
+    expect(testHistory.location.pathname).toBe("/test")
+  })
 
   it("creates a memory source with search", () => {
-    const testHistory = createMemorySource("/test?foo=bar");
-    expect(testHistory.location.search).toBe("?foo=bar");
-  });
-});
+    const testHistory = createMemorySource("/test?foo=bar")
+    expect(testHistory.location.search).toBe("?foo=bar")
+  })
+})
 
 describe("createHistory", () => {
   it("should have location with pathname", () => {
@@ -19,14 +19,14 @@ describe("createHistory", () => {
       location: {
         pathname: "/page",
         search: "",
-        hash: ""
-      }
-    };
+        hash: "",
+      },
+    }
 
-    const history = createHistory(mockSource);
+    const history = createHistory(mockSource)
 
-    expect(history.location.pathname).toEqual("/page");
-  });
+    expect(history.location.pathname).toEqual("/page")
+  })
 
   it("should encode location pathname", () => {
     const mockSource = {
@@ -34,14 +34,14 @@ describe("createHistory", () => {
       location: {
         pathname: "/påge",
         search: "",
-        hash: ""
-      }
-    };
+        hash: "",
+      },
+    }
 
-    const history = createHistory(mockSource);
+    const history = createHistory(mockSource)
 
-    expect(history.location.pathname).toEqual("/p%C3%A5ge");
-  });
+    expect(history.location.pathname).toEqual("/p%C3%A5ge")
+  })
 
   it("should not encode location pathname if it is already encoded", () => {
     const mockSource = {
@@ -49,63 +49,63 @@ describe("createHistory", () => {
       location: {
         pathname: "/p%C3%A5ge",
         search: "",
-        hash: ""
-      }
-    };
+        hash: "",
+      },
+    }
 
-    const history = createHistory(mockSource);
+    const history = createHistory(mockSource)
 
-    expect(history.location.pathname).toEqual("/p%C3%A5ge");
-  });
-});
+    expect(history.location.pathname).toEqual("/p%C3%A5ge")
+  })
+})
 
 describe("navigate", () => {
   test("should go to url", () => {
-    const mockSource = createMemorySource("/one");
-    const history = createHistory(mockSource);
-    history.navigate("/two");
-    expect(history.location.pathname).toBe("/two");
-  });
+    const mockSource = createMemorySource("/one")
+    const history = createHistory(mockSource)
+    history.navigate("/two")
+    expect(history.location.pathname).toBe("/two")
+  })
 
   test("should go to previous route", () => {
-    const mockSource = createMemorySource("/one");
-    const history = createHistory(mockSource);
-    history.navigate("/two");
-    history.navigate(-1);
-    expect(history.location.pathname).toBe("/one");
-  });
+    const mockSource = createMemorySource("/one")
+    const history = createHistory(mockSource)
+    history.navigate("/two")
+    history.navigate(-1)
+    expect(history.location.pathname).toBe("/one")
+  })
 
   test("should go to next route", () => {
-    const mockSource = createMemorySource("/one");
-    const history = createHistory(mockSource);
-    history.navigate("/two");
-    history.navigate(-1);
-    history.navigate(1);
-    expect(history.location.pathname).toBe("/two");
-  });
-});
+    const mockSource = createMemorySource("/one")
+    const history = createHistory(mockSource)
+    history.navigate("/two")
+    history.navigate(-1)
+    history.navigate(1)
+    expect(history.location.pathname).toBe("/two")
+  })
+})
 
 it("should have a proper search", () => {
-  const testHistory = createHistory(createMemorySource("/test"));
-  testHistory.navigate("/?asdf");
-  expect(testHistory.location.search).toEqual("?asdf");
-});
+  const testHistory = createHistory(createMemorySource("/test"))
+  testHistory.navigate("/?asdf")
+  expect(testHistory.location.search).toEqual("?asdf")
+})
 
 describe("Location pathname is undefined. Old device.", () => {
   it("Should works fine", () => {
     const mockSource = {
       history: {
-        go: jest.fn()
+        go: jest.fn(),
       },
       location: {
         pathname: undefined,
         search: "",
         hash: "",
-        href: "http://localhost/test"
-      }
-    };
+        href: "http://localhost/test",
+      },
+    }
 
-    const history = createHistory(mockSource);
-    expect(history.location.pathname).toBe("/test");
-  });
-});
+    const history = createHistory(mockSource)
+    expect(history.location.pathname).toBe("/test")
+  })
+})

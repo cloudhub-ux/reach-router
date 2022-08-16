@@ -1,5 +1,5 @@
-const BABEL_ENV = process.env.BABEL_ENV;
-const building = BABEL_ENV != undefined && BABEL_ENV !== "cjs";
+const BABEL_ENV = process.env.BABEL_ENV
+const building = BABEL_ENV != undefined && BABEL_ENV !== "cjs"
 
 const plugins = [
   "transform-class-properties",
@@ -8,19 +8,19 @@ const plugins = [
   [
     "transform-react-remove-prop-types",
     {
-      mode: "unsafe-wrap"
-    }
+      mode: "unsafe-wrap",
+    },
   ],
   [
     "transform-inline-environment-variables",
     {
-      include: ["COMPAT"]
-    }
-  ]
-];
+      include: ["COMPAT"],
+    },
+  ],
+]
 
 if (BABEL_ENV === "umd") {
-  plugins.push("external-helpers");
+  plugins.push("external-helpers")
 }
 
 module.exports = {
@@ -29,10 +29,10 @@ module.exports = {
       "env",
       {
         loose: true,
-        modules: building ? false : "commonjs"
-      }
+        modules: building ? false : "commonjs",
+      },
     ],
-    "react"
+    "react",
   ],
-  plugins: plugins
-};
+  plugins: plugins,
+}
