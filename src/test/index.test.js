@@ -619,7 +619,7 @@ describe("transitions", () => {
   it("transitions pages", async () => {
     const {
       snapshot,
-      history: { navigate },,
+      history: { navigate },
     } = runWithNavigation(
       <Router>
         <Home path="/" />
@@ -635,7 +635,7 @@ describe("transitions", () => {
     const {
       snapshot,
       history,
-      history: { navigate },,
+      history: { navigate },
     } = runWithNavigation(
       <Router>
         <Home path="/" />

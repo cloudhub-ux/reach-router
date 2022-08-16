@@ -8,10 +8,6 @@ export const Location = ({ children }) => {
   if (context) {
     return children(context)
   } else {
-    return (
-      <LocationProvider>
-        {children}
-      </LocationProvider>
-    )
+    return <LocationProvider>{children}</LocationProvider>
   }
 }

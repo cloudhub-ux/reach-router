@@ -37,9 +37,7 @@ const Redirect = props => {
   const locationContext = useLocationContext()
   const { baseuri } = useBaseContext()
 
-  return (
-    <RedirectImpl {...locationContext} baseuri={baseuri} {...props} />
-  )
+  return <RedirectImpl {...locationContext} baseuri={baseuri} {...props} />
 }
 
 Redirect.propTypes = {

@@ -22,7 +22,8 @@ const createNamedContextServer = (name, defaultValue = null) => {
 }
 
 // TODO: Conditionally use client & server contexts
-export const createNamedContext = (name, defaultValue = null) => createNamedContextServer(name, defaultValue)
+export const createNamedContext = (name, defaultValue = null) =>
+  createNamedContextServer(name, defaultValue)
 
 export const BaseContext = createNamedContext("Base", {
   baseuri: "/",

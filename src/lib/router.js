@@ -8,9 +8,7 @@ export const Router = props => {
   const baseContext = useBaseContext()
   const locationContext = useLocationContext()
 
-  return (
-    <RouterImpl {...baseContext} {...locationContext} {...props} />
-  )
+  return <RouterImpl {...baseContext} {...locationContext} {...props} />
 }
 
 function RouterImpl(props) {

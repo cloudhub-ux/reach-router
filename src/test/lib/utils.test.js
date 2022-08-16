@@ -98,14 +98,14 @@ describe("insertParams", () => {
     expect(
       insertParams("/users/:userId/groups/:groupId", {
         userId: "2",
-        groupId: "4",,
+        groupId: "4",
       })
     ).toEqual("/users/2/groups/4")
     expect(
       insertParams("/users/:userId/groups/:groupId", {
         userId: "2",
         groupId: "4",
-        location: { search: "?a=b&b=c" },,
+        location: { search: "?a=b&b=c" },
       })
     ).toEqual("/users/2/groups/4?a=b&b=c")
   })
@@ -126,55 +126,55 @@ describe("shallowCompare", () => {
 const routes = shuffle([
   {
     value: "MainGroupMe",
-    path: "/groups/main/users/me",,
+    path: "/groups/main/users/me",
   },
   {
     value: "GroupMe",
-    path: "/groups/:groupId/users/me",,
+    path: "/groups/:groupId/users/me",
   },
   {
     value: "GroupUser",
-    path: "/groups/:groupId/users/:userId",,
+    path: "/groups/:groupId/users/:userId",
   },
   {
     value: "Fiver",
-    path: "/:one/:two/:three/:four/:five",,
+    path: "/:one/:two/:three/:four/:five",
   },
   {
     value: "GroupUsersSplat",
-    path: "/groups/:groupId/users/*",,
+    path: "/groups/:groupId/users/*",
   },
   {
     value: "MainGroupUsers",
-    path: "/groups/main/users",,
+    path: "/groups/main/users",
   },
   {
     value: "GroupUsers",
-    path: "/groups/:groupId/users",,
+    path: "/groups/:groupId/users",
   },
   {
     value: "MainGroup",
-    path: "/groups/main",,
+    path: "/groups/main",
   },
   {
     value: "Group",
-    path: "/groups/:groupId",,
+    path: "/groups/:groupId",
   },
   {
     value: "Groups",
-    path: "/groups",,
+    path: "/groups",
   },
   {
     value: "FilesDeep",
-    path: "/files/*",,
+    path: "/files/*",
   },
   {
     value: "Files",
-    path: "/files",,
+    path: "/files",
   },
   {
     value: "Root",
-    path: "/",,
+    path: "/",
   },
   {
     value: "Default",
