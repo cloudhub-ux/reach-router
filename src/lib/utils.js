@@ -2,33 +2,35 @@ import * as React from "react"
 import invariant from "invariant"
 import { Redirect } from "./redirect"
 
-////////////////////////////////////////////////////////////////////////////////
-// startsWith(string, search) - Check if `string` starts with `search`
+/**
+ * startsWith(string, search) - Check if `string` starts with `search`
+ */
 const startsWith = (string, search) => {
   return string.substr(0, search.length) === search
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// pick(routes, uri)
-//
-// Ranks and picks the best route to match. Each segment gets the highest
-// amount of points, then the type of segment gets an additional amount of
-// points where
-//
-//     static > dynamic > splat > root
-//
-// This way we don't have to worry about the order of our routes, let the
-// computers do it.
-//
-// A route looks like this
-//
-//     { path, default, value }
-//
-// And a returned match looks like:
-//
-//     { route, params, uri }
-//
-// I know, I should use TypeScript not comments for these types.
+/**
+ * pick(routes, uri)
+
+  Ranks and picks the best route to match. Each segment gets the highest
+  amount of points, then the type of segment gets an additional amount of
+  points where
+
+      static > dynamic > splat > root
+
+  This way we don't have to worry about the order of our routes, let the
+  computers do it.
+
+  A route looks like this
+
+      { path, default, value }
+
+  And a returned match looks like:
+
+      { route, params, uri }
+
+  I know, I should use TypeScript not comments for these types. 
+ */
 const pick = (routes, uri) => {
   let match
   let default_
@@ -112,36 +114,38 @@ const pick = (routes, uri) => {
   return match || default_ || null
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// match(path, uri) - Matches just one path to a uri, also lol
+/**
+ * match(path, uri) - Matches just one path to a uri, also lol
+ */
 const match = (path, uri) => pick([{ path }], uri)
 
-////////////////////////////////////////////////////////////////////////////////
-// resolve(to, basepath)
-//
-// Resolves URIs as though every path is a directory, no files.  Relative URIs
-// in the browser can feel awkward because not only can you be "in a directory"
-// you can be "at a file", too. For example
-//
-//     browserSpecResolve('foo', '/bar/') => /bar/foo
-//     browserSpecResolve('foo', '/bar') => /foo
-//
-// But on the command line of a file system, it's not as complicated, you can't
-// `cd` from a file, only directories.  This way, links have to know less about
-// their current path. To go deeper you can do this:
-//
-//     <Link to="deeper"/>
-//     // instead of
-//     <Link to=`{${props.uri}/deeper}`/>
-//
-// Just like `cd`, if you want to go deeper from the command line, you do this:
-//
-//     cd deeper
-//     # not
-//     cd $(pwd)/deeper
-//
-// By treating every path as a directory, linking to relative paths should
-// require less contextual information and (fingers crossed) be more intuitive.
+/**
+ * resolve(to, basepath)
+
+  Resolves URIs as though every path is a directory, no files.  Relative URIs
+  in the browser can feel awkward because not only can you be "in a directory"
+  you can be "at a file", too. For example
+
+      browserSpecResolve('foo', '/bar/') => /bar/foo
+      browserSpecResolve('foo', '/bar') => /foo
+
+  But on the command line of a file system, it's not as complicated, you can't
+  `cd` from a file, only directories.  This way, links have to know less about
+  their current path. To go deeper you can do this:
+
+      <Link to="deeper"/>
+      // instead of
+      <Link to=`{${props.uri}/deeper}`/>
+
+  Just like `cd`, if you want to go deeper from the command line, you do this:
+
+      cd deeper
+      // not
+      cd $(pwd)/deeper
+
+  By treating every path as a directory, linking to relative paths should
+  require less contextual information and (fingers crossed) be more intuitive.
+ */
 const resolve = (to, base) => {
   // /foo/bar, /baz/qux => /foo/bar
   if (startsWith(to, "/")) {
@@ -181,9 +185,6 @@ const resolve = (to, base) => {
   return addQuery("/" + segments.join("/"), toQuery)
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// insertParams(path, params)
-
 const insertParams = (path, params) => {
   const [pathBase, query = ""] = path.split("?")
   const segments = segmentize(pathBase)
@@ -208,8 +209,6 @@ const validateRedirect = (from, to) => {
   return fromString === toString
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Junk
 const paramRe = /^:(.+)/
 
 const SEGMENT_POINTS = 4
