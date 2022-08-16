@@ -19,7 +19,7 @@ import {
   useLocation,
   useParams,
   useMatch
-} from "./index";
+} from "../index";
 
 let snapshot = ({ pathname, element }) => {
   let testHistory = createHistory(createMemorySource(pathname));

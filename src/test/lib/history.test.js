@@ -1,4 +1,4 @@
-import { createMemorySource, createHistory } from "./history";
+import { createMemorySource, createHistory } from "../../lib/history";
 
 describe("createMemorySource", () => {
   it("creates a memory source with correct pathname", () => {

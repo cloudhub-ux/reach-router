@@ -93,7 +93,6 @@ let createHistory = (source, options) => {
   };
 };
 
-////////////////////////////////////////////////////////////////////////////////
 // Stores history entries in memory for testing or other platforms like Native
 let createMemorySource = (initialPath = "/") => {
   let searchIndex = initialPath.indexOf("?");
@@ -146,7 +145,6 @@ let createMemorySource = (initialPath = "/") => {
   };
 };
 
-////////////////////////////////////////////////////////////////////////////////
 // global history - uses window.history as the source if available, otherwise a
 // memory history
 let canUseDOM = !!(
@@ -161,5 +159,4 @@ let getSource = () => {
 let globalHistory = createHistory(getSource());
 let { navigate } = globalHistory;
 
-////////////////////////////////////////////////////////////////////////////////
 export { globalHistory, navigate, createHistory, createMemorySource };

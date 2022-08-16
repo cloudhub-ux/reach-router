@@ -1,4 +1,6 @@
+import * as React from "react";
 import invariant from "invariant";
+import { Redirect } from "./redirect";
 
 ////////////////////////////////////////////////////////////////////////////////
 // startsWith(string, search) - Check if `string` starts with `search`
@@ -273,7 +275,58 @@ const shallowCompare = (obj1, obj2) => {
   );
 };
 
-////////////////////////////////////////////////////////////////////////////////
+let stripSlashes = str => str.replace(/(^\/+|\/+$)/g, "");
+
+let createRoute = basepath => element => {
+  if (!element) {
+    return null;
+  }
+
+  if (element.type === React.Fragment && element.props.children) {
+    return React.Children.map(element.props.children, createRoute(basepath));
+  }
+  invariant(
+    element.props.path || element.props.default || element.type === Redirect,
+    `<Router>: Children of <Router> must have a \`path\` or \`default\` prop, or be a \`<Redirect>\`. None found on element type \`${element.type}\``
+  );
+
+  invariant(
+    !(element.type === Redirect && (!element.props.from || !element.props.to)),
+    `<Redirect from="${element.props.from}" to="${element.props.to}"/> requires both "from" and "to" props when inside a <Router>.`
+  );
+
+  invariant(
+    !(
+      element.type === Redirect &&
+      !validateRedirect(element.props.from, element.props.to)
+    ),
+    `<Redirect from="${element.props.from} to="${element.props.to}"/> has mismatched dynamic segments, ensure both paths have the exact same dynamic segments.`
+  );
+
+  if (element.props.default) {
+    return { value: element, default: true };
+  }
+
+  let elementPath =
+    element.type === Redirect ? element.props.from : element.props.path;
+
+  let path =
+    elementPath === "/"
+      ? basepath
+      : `${stripSlashes(basepath)}/${stripSlashes(elementPath)}`;
+
+  return {
+    value: element,
+    default: element.props.default,
+    path: element.props.children ? `${stripSlashes(path)}/*` : path
+  };
+};
+
+let shouldNavigate = event =>
+  !event.defaultPrevented &&
+  event.button === 0 &&
+  !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+
 export {
   startsWith,
   pick,
@@ -281,5 +334,7 @@ export {
   resolve,
   insertParams,
   validateRedirect,
-  shallowCompare
+  shallowCompare,
+  createRoute,
+  shouldNavigate
 };
