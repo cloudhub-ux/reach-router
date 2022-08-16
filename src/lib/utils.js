@@ -1,12 +1,12 @@
-import * as React from "react";
-import invariant from "invariant";
-import { Redirect } from "./redirect";
+import * as React from "react"
+import invariant from "invariant"
+import { Redirect } from "./redirect"
 
 ////////////////////////////////////////////////////////////////////////////////
 // startsWith(string, search) - Check if `string` starts with `search`
 let startsWith = (string, search) => {
-  return string.substr(0, search.length) === search;
-};
+  return string.substr(0, search.length) === search
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // pick(routes, uri)
@@ -30,72 +30,72 @@ let startsWith = (string, search) => {
 //
 // I know, I should use TypeScript not comments for these types.
 let pick = (routes, uri) => {
-  let match;
-  let default_;
+  let match
+  let default_
 
-  let [uriPathname] = uri.split("?");
-  let uriSegments = segmentize(uriPathname);
-  let isRootUri = uriSegments[0] === "";
-  let ranked = rankRoutes(routes);
+  let [uriPathname] = uri.split("?")
+  let uriSegments = segmentize(uriPathname)
+  let isRootUri = uriSegments[0] === ""
+  let ranked = rankRoutes(routes)
 
   for (let i = 0, l = ranked.length; i < l; i++) {
-    let missed = false;
-    let route = ranked[i].route;
+    let missed = false
+    let route = ranked[i].route
 
     if (route.default) {
       default_ = {
         route,
         params: {},
-        uri
-      };
-      continue;
+        uri,
+      }
+      continue
     }
 
-    let routeSegments = segmentize(route.path);
-    let params = {};
-    let max = Math.max(uriSegments.length, routeSegments.length);
-    let index = 0;
+    let routeSegments = segmentize(route.path)
+    let params = {}
+    let max = Math.max(uriSegments.length, routeSegments.length)
+    let index = 0
 
     for (; index < max; index++) {
-      let routeSegment = routeSegments[index];
-      let uriSegment = uriSegments[index];
+      let routeSegment = routeSegments[index]
+      let uriSegment = uriSegments[index]
 
       if (isSplat(routeSegment)) {
         // Hit a splat, just grab the rest, and return a match
         // uri:   /files/documents/work
         // route: /files/*
-        const param = routeSegment.slice(1) || "*";
+        const param = routeSegment.slice(1) || "*"
         params[param] = uriSegments
           .slice(index)
           .map(decodeURIComponent)
-          .join("/");
-        break;
+          .join("/")
+        break
       }
 
       if (uriSegment === undefined) {
         // URI is shorter than the route, no match
         // uri:   /users
         // route: /users/:userId
-        missed = true;
-        break;
+        missed = true
+        break
       }
 
-      let dynamicMatch = paramRe.exec(routeSegment);
+      let dynamicMatch = paramRe.exec(routeSegment)
 
       if (dynamicMatch && !isRootUri) {
-        let matchIsNotReserved = reservedNames.indexOf(dynamicMatch[1]) === -1;
+        let matchIsNotReserved = reservedNames.indexOf(dynamicMatch[1]) === -1
         invariant(
           matchIsNotReserved,
           `<Router> dynamic segment "${dynamicMatch[1]}" is a reserved name. Please use a different name in path "${route.path}".`
-        );
-        let value = decodeURIComponent(uriSegment);
-        params[dynamicMatch[1]] = value;
+        )
+        let value = decodeURIComponent(uriSegment)
+        params[dynamicMatch[1]] = value
       } else if (routeSegment !== uriSegment) {
         // Current segments don't match, not dynamic, not splat, so no match
         // uri:   /users/123/settings
         // route: /users/:id/profile
-        missed = true;
-        break;
+        missed = true
+        break
       }
     }
 
@@ -103,18 +103,18 @@ let pick = (routes, uri) => {
       match = {
         route,
         params,
-        uri: "/" + uriSegments.slice(0, index).join("/")
-      };
-      break;
+        uri: "/" + uriSegments.slice(0, index).join("/"),
+      }
+      break
     }
   }
 
-  return match || default_ || null;
-};
+  return match || default_ || null
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // match(path, uri) - Matches just one path to a uri, also lol
-let match = (path, uri) => pick([{ path }], uri);
+let match = (path, uri) => pick([{ path }], uri)
 
 ////////////////////////////////////////////////////////////////////////////////
 // resolve(to, basepath)
@@ -145,24 +145,24 @@ let match = (path, uri) => pick([{ path }], uri);
 let resolve = (to, base) => {
   // /foo/bar, /baz/qux => /foo/bar
   if (startsWith(to, "/")) {
-    return to;
+    return to
   }
 
-  let [toPathname, toQuery] = to.split("?");
-  let [basePathname] = base.split("?");
+  let [toPathname, toQuery] = to.split("?")
+  let [basePathname] = base.split("?")
 
-  let toSegments = segmentize(toPathname);
-  let baseSegments = segmentize(basePathname);
+  let toSegments = segmentize(toPathname)
+  let baseSegments = segmentize(basePathname)
 
   // ?a=b, /users?b=c => /users?a=b
   if (toSegments[0] === "") {
-    return addQuery(basePathname, toQuery);
+    return addQuery(basePathname, toQuery)
   }
 
   // profile, /users/789 => /users/789/profile
   if (!startsWith(toSegments[0], ".")) {
-    let pathname = baseSegments.concat(toSegments).join("/");
-    return addQuery((basePathname === "/" ? "" : "/") + pathname, toQuery);
+    let pathname = baseSegments.concat(toSegments).join("/")
+    return addQuery((basePathname === "/" ? "" : "/") + pathname, toQuery)
   }
 
   // ./         /users/123  =>  /users/123
@@ -170,97 +170,91 @@ let resolve = (to, base) => {
   // ../..      /users/123  =>  /
   // ../../one  /a/b/c/d    =>  /a/b/one
   // .././one   /a/b/c/d    =>  /a/b/c/one
-  let allSegments = baseSegments.concat(toSegments);
-  let segments = [];
+  let allSegments = baseSegments.concat(toSegments)
+  let segments = []
   for (let i = 0, l = allSegments.length; i < l; i++) {
-    let segment = allSegments[i];
-    if (segment === "..") segments.pop();
-    else if (segment !== ".") segments.push(segment);
+    let segment = allSegments[i]
+    if (segment === "..") segments.pop()
+    else if (segment !== ".") segments.push(segment)
   }
 
-  return addQuery("/" + segments.join("/"), toQuery);
-};
+  return addQuery("/" + segments.join("/"), toQuery)
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // insertParams(path, params)
 
 const insertParams = (path, params) => {
-  let [pathBase, query = ""] = path.split("?");
-  let segments = segmentize(pathBase);
+  let [pathBase, query = ""] = path.split("?")
+  let segments = segmentize(pathBase)
   let constructedPath =
     "/" +
     segments
       .map(segment => {
-        let match = paramRe.exec(segment);
-        return match ? params[match[1]] : segment;
+        let match = paramRe.exec(segment)
+        return match ? params[match[1]] : segment
       })
-      .join("/");
-  const { location: { search = "" } = {} } = params;
-  const searchSplit = search.split("?")[1] || "";
-  constructedPath = addQuery(constructedPath, query, searchSplit);
-  return constructedPath;
-};
+      .join("/")
+  const { location: { search = "" } = {} } = params
+  const searchSplit = search.split("?")[1] || ""
+  constructedPath = addQuery(constructedPath, query, searchSplit)
+  return constructedPath
+}
 
 let validateRedirect = (from, to) => {
-  let filter = segment => isDynamic(segment);
-  let fromString = segmentize(from)
-    .filter(filter)
-    .sort()
-    .join("/");
-  let toString = segmentize(to)
-    .filter(filter)
-    .sort()
-    .join("/");
-  return fromString === toString;
-};
+  let filter = segment => isDynamic(segment)
+  let fromString = segmentize(from).filter(filter).sort().join("/")
+  let toString = segmentize(to).filter(filter).sort().join("/")
+  return fromString === toString
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Junk
-let paramRe = /^:(.+)/;
+let paramRe = /^:(.+)/
 
-let SEGMENT_POINTS = 4;
-let STATIC_POINTS = 3;
-let DYNAMIC_POINTS = 2;
-let SPLAT_PENALTY = 1;
-let ROOT_POINTS = 1;
+let SEGMENT_POINTS = 4
+let STATIC_POINTS = 3
+let DYNAMIC_POINTS = 2
+let SPLAT_PENALTY = 1
+let ROOT_POINTS = 1
 
-let isRootSegment = segment => segment === "";
-let isDynamic = segment => paramRe.test(segment);
-let isSplat = segment => segment && segment[0] === "*";
+let isRootSegment = segment => segment === ""
+let isDynamic = segment => paramRe.test(segment)
+let isSplat = segment => segment && segment[0] === "*"
 
 let rankRoute = (route, index) => {
   let score = route.default
     ? 0
     : segmentize(route.path).reduce((score, segment) => {
-        score += SEGMENT_POINTS;
-        if (isRootSegment(segment)) score += ROOT_POINTS;
-        else if (isDynamic(segment)) score += DYNAMIC_POINTS;
-        else if (isSplat(segment)) score -= SEGMENT_POINTS + SPLAT_PENALTY;
-        else score += STATIC_POINTS;
-        return score;
-      }, 0);
-  return { route, score, index };
-};
+        score += SEGMENT_POINTS
+        if (isRootSegment(segment)) score += ROOT_POINTS
+        else if (isDynamic(segment)) score += DYNAMIC_POINTS
+        else if (isSplat(segment)) score -= SEGMENT_POINTS + SPLAT_PENALTY
+        else score += STATIC_POINTS
+        return score
+      }, 0)
+  return { route, score, index }
+}
 
 let rankRoutes = routes =>
   routes
     .map(rankRoute)
     .sort((a, b) =>
       a.score < b.score ? 1 : a.score > b.score ? -1 : a.index - b.index
-    );
+    )
 
 let segmentize = uri =>
   uri
     // strip starting/ending slashes
     .replace(/(^\/+|\/+$)/g, "")
-    .split("/");
+    .split("/")
 
 let addQuery = (pathname, ...query) => {
-  query = query.filter(q => q && q.length > 0);
-  return pathname + (query && query.length > 0 ? `?${query.join("&")}` : "");
-};
+  query = query.filter(q => q && q.length > 0)
+  return pathname + (query && query.length > 0 ? `?${query.join("&")}` : "")
+}
 
-let reservedNames = ["uri", "path"];
+let reservedNames = ["uri", "path"]
 
 /**
  * Shallow compares two objects.
@@ -268,32 +262,32 @@ let reservedNames = ["uri", "path"];
  * @param {Object} obj2 The second object to compare.
  */
 const shallowCompare = (obj1, obj2) => {
-  const obj1Keys = Object.keys(obj1);
+  const obj1Keys = Object.keys(obj1)
   return (
     obj1Keys.length === Object.keys(obj2).length &&
     obj1Keys.every(key => obj2.hasOwnProperty(key) && obj1[key] === obj2[key])
-  );
-};
+  )
+}
 
-let stripSlashes = str => str.replace(/(^\/+|\/+$)/g, "");
+let stripSlashes = str => str.replace(/(^\/+|\/+$)/g, "")
 
 let createRoute = basepath => element => {
   if (!element) {
-    return null;
+    return null
   }
 
   if (element.type === React.Fragment && element.props.children) {
-    return React.Children.map(element.props.children, createRoute(basepath));
+    return React.Children.map(element.props.children, createRoute(basepath))
   }
   invariant(
     element.props.path || element.props.default || element.type === Redirect,
     `<Router>: Children of <Router> must have a \`path\` or \`default\` prop, or be a \`<Redirect>\`. None found on element type \`${element.type}\``
-  );
+  )
 
   invariant(
     !(element.type === Redirect && (!element.props.from || !element.props.to)),
     `<Redirect from="${element.props.from}" to="${element.props.to}"/> requires both "from" and "to" props when inside a <Router>.`
-  );
+  )
 
   invariant(
     !(
@@ -301,31 +295,31 @@ let createRoute = basepath => element => {
       !validateRedirect(element.props.from, element.props.to)
     ),
     `<Redirect from="${element.props.from} to="${element.props.to}"/> has mismatched dynamic segments, ensure both paths have the exact same dynamic segments.`
-  );
+  )
 
   if (element.props.default) {
-    return { value: element, default: true };
+    return { value: element, default: true }
   }
 
   let elementPath =
-    element.type === Redirect ? element.props.from : element.props.path;
+    element.type === Redirect ? element.props.from : element.props.path
 
   let path =
     elementPath === "/"
       ? basepath
-      : `${stripSlashes(basepath)}/${stripSlashes(elementPath)}`;
+      : `${stripSlashes(basepath)}/${stripSlashes(elementPath)}`
 
   return {
     value: element,
     default: element.props.default,
-    path: element.props.children ? `${stripSlashes(path)}/*` : path
-  };
-};
+    path: element.props.children ? `${stripSlashes(path)}/*` : path,
+  }
+}
 
 let shouldNavigate = event =>
   !event.defaultPrevented &&
   event.button === 0 &&
-  !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+  !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
 
 export {
   startsWith,
@@ -336,5 +330,5 @@ export {
   validateRedirect,
   shallowCompare,
   createRoute,
-  shouldNavigate
-};
+  shouldNavigate,
+}

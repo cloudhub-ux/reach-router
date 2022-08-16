@@ -1,8 +1,7 @@
-import * as React from "react";
-import { createNamedContext } from "./context-create-named";
-import { polyfill } from "react-lifecycles-compat";
+import * as React from "react"
+import { createNamedContext } from "./context-create-named"
 
-let FocusContext = createNamedContext("Focus");
+let FocusContext = createNamedContext("Focus")
 
 let FocusHandler = ({ uri, location, component, ...domProps }) => (
   <FocusContext.Consumer>
@@ -16,49 +15,49 @@ let FocusHandler = ({ uri, location, component, ...domProps }) => (
       />
     )}
   </FocusContext.Consumer>
-);
+)
 
 // don't focus on initial render
-let initialRender = true;
-let focusHandlerCount = 0;
+let initialRender = true
+let focusHandlerCount = 0
 
 class FocusHandlerImpl extends React.Component {
-  state = {};
+  state = {}
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    let initial = prevState.uri == null;
+    let initial = prevState.uri == null
     if (initial) {
       return {
         shouldFocus: true,
-        ...nextProps
-      };
+        ...nextProps,
+      }
     } else {
-      let myURIChanged = nextProps.uri !== prevState.uri;
+      let myURIChanged = nextProps.uri !== prevState.uri
       let navigatedUpToMe =
         prevState.location.pathname !== nextProps.location.pathname &&
-        nextProps.location.pathname === nextProps.uri;
+        nextProps.location.pathname === nextProps.uri
       return {
         shouldFocus: myURIChanged || navigatedUpToMe,
-        ...nextProps
-      };
+        ...nextProps,
+      }
     }
   }
 
   componentDidMount() {
-    focusHandlerCount++;
-    this.focus();
+    focusHandlerCount++
+    this.focus()
   }
 
   componentWillUnmount() {
-    focusHandlerCount--;
+    focusHandlerCount--
     if (focusHandlerCount === 0) {
-      initialRender = true;
+      initialRender = true
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.location !== this.props.location && this.state.shouldFocus) {
-      this.focus();
+      this.focus()
     }
   }
 
@@ -67,21 +66,21 @@ class FocusHandlerImpl extends React.Component {
       // getting cannot read property focus of null in the tests
       // and that bit of global `initialRender` state causes problems
       // should probably figure it out!
-      return;
+      return
     }
 
-    let { requestFocus } = this.props;
+    let { requestFocus } = this.props
 
     if (requestFocus) {
-      requestFocus(this.node);
+      requestFocus(this.node)
     } else {
       if (initialRender) {
-        initialRender = false;
+        initialRender = false
       } else if (this.node) {
         // React polyfills [autofocus] and it fires earlier than cDM,
         // so we were stealing focus away, this line prevents that.
         if (!this.node.contains(document.activeElement)) {
-          this.node.focus();
+          this.node.focus()
         }
       }
     }
@@ -89,9 +88,9 @@ class FocusHandlerImpl extends React.Component {
 
   requestFocus = node => {
     if (!this.state.shouldFocus && node) {
-      node.focus();
+      node.focus()
     }
-  };
+  }
 
   render() {
     let {
@@ -102,7 +101,7 @@ class FocusHandlerImpl extends React.Component {
       uri,
       location,
       ...domProps
-    } = this.props;
+    } = this.props
 
     return (
       <Comp
@@ -115,10 +114,8 @@ class FocusHandlerImpl extends React.Component {
           {this.props.children}
         </FocusContext.Provider>
       </Comp>
-    );
+    )
   }
 }
 
-polyfill(FocusHandlerImpl);
-
-export { FocusHandler };
+export { FocusHandler }
