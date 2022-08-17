@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import React from "react"
-import ReactDOM from "react-dom"
+import ReactDOM from "react-dom/client"
 import ReactTestUtils from "react-dom/test-utils"
 import renderer from "react-test-renderer"
-import { renderToString, renderToStaticMarkup } from "react-dom/server"
+import ReactDomServer from "react-dom/server"
 
 import {
   navigate,
@@ -415,28 +415,34 @@ describe("links", () => {
     jest.resetAllMocks()
   })
 
-  it("accepts an innerRef prop", done => {
+  it("accepts an innerRef prop", () => {
     let ref
     const div = document.createElement("div")
-    ReactDOM.render(
-      <Link to="/" innerRef={node => (ref = node)} />,
-      div,
-      () => {
+    const root = ReactDOM.createRoot(div)
+    function LinkWithCallback() {
+      React.useEffect(() => {
         expect(ref).toBeInstanceOf(HTMLAnchorElement)
-        ReactDOM.unmountComponentAtNode(div)
-        done()
-      }
-    )
+      })
+
+      return <Link to="/" innerRef={node => (ref = node)} />
+    }
+    root.render(<LinkWithCallback />)
+    root.unmount()
   })
 
-  it("forwards refs", done => {
+  it("forwards refs", () => {
     let ref
     const div = document.createElement("div")
-    ReactDOM.render(<Link to="/" ref={node => (ref = node)} />, div, () => {
-      expect(ref).toBeInstanceOf(HTMLAnchorElement)
-      ReactDOM.unmountComponentAtNode(div)
-      done()
-    })
+    const root = ReactDOM.createRoot(div)
+    function LinkWithCallback() {
+      React.useEffect(() => {
+        expect(ref).toBeInstanceOf(HTMLAnchorElement)
+      })
+
+      return <Link to="/" ref={node => (ref = node)} />
+    }
+    root.render(<LinkWithCallback />)
+    root.unmount()
   })
 
   it("renders links with relative hrefs", () => {
@@ -504,21 +510,21 @@ describe("links", () => {
   it("calls history.pushState when clicked", () => {
     const SomePage = () => <Link to="/reports">Go To Reports</Link>
     const div = document.createElement("div")
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(div)
+    root.render(
       <LocationProvider>
         <Router>
           <SomePage path="/" />
           <Reports path="/reports" />
         </Router>
-      </LocationProvider>,
-      div
+      </LocationProvider>
     )
     try {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
       expect(window.history.pushState).toHaveBeenCalled()
     } finally {
-      ReactDOM.unmountComponentAtNode(div)
+      root.unmount()
     }
   })
 
@@ -527,41 +533,41 @@ describe("links", () => {
     expect(window.history.replaceState).toHaveBeenCalled()
     const SomePage = () => <Link to="/reports">Go To Reports</Link>
     const div = document.createElement("div")
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(div)
+    root.render(
       <LocationProvider>
         <Router>
           <SomePage path="/" />
           <Reports path="/reports" />
         </Router>
-      </LocationProvider>,
-      div
+      </LocationProvider>
     )
     try {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
       expect(window.history.pushState).toHaveBeenCalled()
     } finally {
-      ReactDOM.unmountComponentAtNode(div)
+      root.unmount()
     }
   })
 
   it("calls history.replaceState when link for current path is clicked without state", () => {
     const TestPage = () => <Link to="/">Go To Test</Link>
     const div = document.createElement("div")
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(div)
+    root.render(
       <LocationProvider>
         <Router>
           <TestPage path="/" />
         </Router>
-      </LocationProvider>,
-      div
+      </LocationProvider>
     )
     try {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
       expect(window.history.replaceState).toHaveBeenCalledTimes(1)
     } finally {
-      ReactDOM.unmountComponentAtNode(div)
+      root.unmount()
     }
   })
   it("calls history.replaceState when link for current path is clicked with the same state", () => {
@@ -572,20 +578,20 @@ describe("links", () => {
       </Link>
     )
     const div = document.createElement("div")
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(div)
+    root.render(
       <LocationProvider>
         <Router>
           <TestPage path="/" />
         </Router>
-      </LocationProvider>,
-      div
+      </LocationProvider>
     )
     try {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
       expect(window.history.replaceState).toHaveBeenCalledTimes(1)
     } finally {
-      ReactDOM.unmountComponentAtNode(div)
+      root.unmount()
     }
   })
   it("calls history.pushState when link for current path is clicked with different state", async () => {
@@ -595,13 +601,13 @@ describe("links", () => {
       </Link>
     )
     const div = document.createElement("div")
-    ReactDOM.render(
+    const root = ReactDOM.createRoot(div)
+    root.render(
       <LocationProvider>
         <Router>
           <TestPage path="/" />
         </Router>
-      </LocationProvider>,
-      div
+      </LocationProvider>
     )
     try {
       const a = div.querySelector("a")
@@ -610,7 +616,7 @@ describe("links", () => {
       ReactTestUtils.Simulate.click(a, { button: 0 })
       expect(window.history.pushState).toHaveBeenCalledTimes(2)
     } finally {
-      ReactDOM.unmountComponentAtNode(div)
+      root.unmount()
     }
   })
 })
@@ -708,8 +714,6 @@ describe("location", () => {
   })
 })
 
-// React 16.4 is buggy https://github.com/facebook/react/issues/12968
-// so some tests are skipped
 describe("ServerLocation", () => {
   const NestedRouter = () => (
     <Router>
@@ -727,9 +731,9 @@ describe("ServerLocation", () => {
     </Router>
   )
 
-  it.skip("works", () => {
+  it("works", () => {
     expect(
-      renderToString(
+      ReactDomServer.renderToString(
         <ServerLocation url="/">
           <App />
         </ServerLocation>
@@ -737,7 +741,7 @@ describe("ServerLocation", () => {
     ).toMatchSnapshot()
 
     expect(
-      renderToString(
+      ReactDomServer.renderToString(
         <ServerLocation url="/groups/123">
           <App />
         </ServerLocation>
@@ -745,11 +749,11 @@ describe("ServerLocation", () => {
     ).toMatchSnapshot()
   })
 
-  test.skip("redirects", () => {
+  it("redirects", () => {
     const redirectedPath = "/g/123"
     let markup
     try {
-      markup = renderToString(
+      markup = ReactDomServer.renderToString(
         <ServerLocation url={redirectedPath}>
           <App />
         </ServerLocation>
@@ -761,11 +765,11 @@ describe("ServerLocation", () => {
     expect(markup).not.toBeDefined()
   })
 
-  test.skip("nested redirects", () => {
+  it("nested redirects", () => {
     const redirectedPath = "/nested"
     let markup
     try {
-      markup = renderToString(
+      markup = ReactDomServer.renderToString(
         <ServerLocation url={redirectedPath}>
           <App />
         </ServerLocation>
@@ -777,8 +781,8 @@ describe("ServerLocation", () => {
     expect(markup).not.toBeDefined()
   })
 
-  test("location.search", () => {
-    const markup = renderToStaticMarkup(
+  it("location.search", () => {
+    const markup = ReactDomServer.renderToStaticMarkup(
       <ServerLocation url="/print-location?it=works">
         <App />
       </ServerLocation>
@@ -864,7 +868,7 @@ describe("hooks", () => {
       }
 
       expect(() => {
-        renderToString(<Fixture />)
+        ReactDomServer.renderToString(<Fixture />)
       }).toThrow(
         "useLocation hook was used but a LocationContext.Provider was not found in the parent tree. Make sure this is used in a component that is a child of Router"
       )

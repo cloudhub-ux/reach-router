@@ -22,7 +22,7 @@ function RedirectImpl(props) {
       const resolvedTo = resolve(to, baseuri)
       navigate(insertParams(resolvedTo, props), { replace, state })
     })
-  }, [resolve, navigate, insertParams])
+  }, [])
 
   const resolvedTo = resolve(to, baseuri)
 

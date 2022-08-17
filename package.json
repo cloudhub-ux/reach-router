@@ -21,15 +21,6 @@
     "fix": "npm run format && npm run lint:fix",
     "postinstall": "husky install"
   },
-  "jest": {
-    "globals": {
-      "__DEV__": true
-    },
-    "testRegex": ".+\\.test\\.js$",
-    "testEnvironmentOptions": {
-      "url": "http://localhost"
-    }
-  },
   "peerDependencies": {
     "react": "18.x",
     "react-dom": "18.x"
@@ -50,6 +41,7 @@
     "eslint-plugin-react": "^7.30.1",
     "husky": "^7.0.0",
     "jest": "^28.1.3",
+    "jest-environment-jsdom": "^28.1.3",
     "microbundle": "^0.15.0",
     "prettier": "^2.7.1",
     "react": "experimental",
