@@ -16,11 +16,11 @@ function RouterImpl(props) {
     location,
     primary = true,
     children,
+    basepath,
     baseuri,
     component = "div",
     ...domProps
   } = props
-  let { basepath } = props
 
   const routes = React.Children.toArray(children).reduce((array, child) => {
     const routes = createRoute(basepath)(child)
@@ -38,7 +38,9 @@ function RouterImpl(props) {
     } = match
 
     // remove the /* from the end for child routes relative paths
-    basepath = route.default ? basepath : route.path.replace(/\*$/, "")
+    const normalizedBasePath = route.default
+      ? basepath
+      : route.path.replace(/\*$/, "")
 
     const props = {
       ...params,
@@ -64,7 +66,9 @@ function RouterImpl(props) {
       : domProps
 
     return (
-      <BaseContext.Provider value={{ baseuri: uri, basepath }}>
+      <BaseContext.Provider
+        value={{ baseuri: uri, basepath: normalizedBasePath }}
+      >
         <FocusWrapper {...wrapperProps}>{clone}</FocusWrapper>
       </BaseContext.Provider>
     )
