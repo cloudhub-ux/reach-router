@@ -9,7 +9,6 @@ export const LocationProvider = withErrorBoundary(
     const { location } = history
 
     const [context, setContext] = React.useState({ location })
-    const [refs, setRefs] = React.useState({ unlisten: null })
     const [error, _] = useErrorBoundary()
 
     React.useEffect(() => {
@@ -17,7 +16,7 @@ export const LocationProvider = withErrorBoundary(
     }, [context.location])
 
     React.useEffect(() => {
-      let isCancelled = false;
+      let isCancelled = false
       const unlisten = history.listen(() => {
         Promise.resolve().then(() => {
           requestAnimationFrame(() => {
@@ -28,7 +27,7 @@ export const LocationProvider = withErrorBoundary(
         })
       })
       return () => {
-        isCancelled = true;
+        isCancelled = true
         unlisten()
       }
     }, [])
