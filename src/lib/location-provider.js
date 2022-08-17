@@ -17,18 +17,19 @@ export const LocationProvider = withErrorBoundary(
     }, [context.location])
 
     React.useEffect(() => {
-      history._onTransitionComplete()
+      let isCancelled = false;
       const unlisten = history.listen(() => {
         Promise.resolve().then(() => {
           requestAnimationFrame(() => {
-            setContext({ location })
+            if (!isCancelled) {
+              setContext({ location })
+            }
           })
         })
       })
-      setRefs({ unlisten })
-
       return () => {
-        refs.unlisten()
+        isCancelled = true;
+        unlisten()
       }
     }, [])
 
