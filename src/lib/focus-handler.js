@@ -28,23 +28,12 @@ const FocusHandlerImpl = ({
   ...domProps
 }) => {
   let node = React.useRef()
+  const initialRenderRef = React.useRef(true)
+  const uriRef = React.useRef(uri)
+  const pathnameRef = React.useRef(location.pathname)
+  const shouldFocusRef = React.useRef(true)
 
-  const [shouldFocus, setShouldFocus] = React.useState(true)
-  const [prevUri, setPrevUri] = React.useState(uri)
-  const [prevPathname, setPrevPathname] = React.useState(location.pathname)
-  const initialRender = React.useRef(true)
-
-  if (uri) {
-    const myURIChanged = uri !== prevUri
-    const navigatedUpToMe =
-      prevPathname !== location.pathname && location.pathname === uri
-
-    setPrevUri(uri)
-    setPrevPathname(location.pathname)
-
-    setShouldFocus(myURIChanged || navigatedUpToMe)
-  }
-
+  // Initial mount/unmount logic
   React.useEffect(() => {
     focusHandlerCount++
     focus()
@@ -52,30 +41,48 @@ const FocusHandlerImpl = ({
     return () => {
       focusHandlerCount--
       if (focusHandlerCount === 0) {
-        initialRender.current = true
+        initialRenderRef.current = true
       }
     }
   }, [])
 
+  // Subsequent navigation logic
   React.useEffect(() => {
-    if (shouldFocus) {
+    let uriChanged = false
+    let pathnameChanged = false
+
+    if (uri !== uriRef.current) {
+      uriRef.current = uri
+      uriChanged = true
+    }
+
+    if (location.pathname !== pathnameRef.current) {
+      pathnameRef.current = location.pathname
+      pathnameChanged = true
+    }
+
+    const navigatedUpToMe = pathnameChanged && location.pathname === uri
+
+    shouldFocusRef.current = uriChanged || navigatedUpToMe
+
+    if (shouldFocusRef.current) {
       focus()
     }
-  }, [location])
+  }, [uri, location])
 
   const focus = React.useCallback(() => {
     if (process.env.NODE_ENV === "test") {
       // TODO: Still a problem?
       // getting cannot read property focus of null in the tests
-      // and that bit of global `initialRender` state causes problems
+      // and that bit of global `initialRenderRef` state causes problems
       return
     }
 
     if (requestFocus) {
       requestFocus(node.current)
     } else {
-      if (initialRender.current) {
-        initialRender.current = false
+      if (initialRenderRef.current) {
+        initialRenderRef.current = false
       } else if (node) {
         // React polyfills [autofocus] and it fires earlier than cDM, so we were stealing focus away, this line prevents that.
         if (!node.current.contains(document.activeElement)) {
@@ -86,7 +93,7 @@ const FocusHandlerImpl = ({
   }, [])
 
   const _requestFocus = node => {
-    if (!shouldFocus && node) {
+    if (!shouldFocusRef.current && node) {
       node.current.focus()
     }
   }
