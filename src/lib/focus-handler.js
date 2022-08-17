@@ -62,7 +62,7 @@ const FocusHandlerImpl = ({
     }
   }, [location])
 
-  const focus = () => {
+  const focus = useCallback(() => {
     if (process.env.NODE_ENV === "test") {
       // TODO: Still a problem?
       // getting cannot read property focus of null in the tests
@@ -82,7 +82,7 @@ const FocusHandlerImpl = ({
         }
       }
     }
-  }
+  }, [])
 
   const _requestFocus = node => {
     if (!shouldFocus && node) {
