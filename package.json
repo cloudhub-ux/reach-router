@@ -1,6 +1,6 @@
 {
   "name": "@gatsbyjs/reach-router",
-  "version": "1.3.10-no-navigate.0",
+  "version": "1.3.10-no-navigate.1",
   "description": "Next generation Routing for React.",
   "source": "src/index.js",
   "main": "dist/index.js",
