@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
 import React from "react"
 import ReactDOM from "react-dom/client"
-import ReactTestUtils from "react-dom/test-utils"
-import renderer from "react-test-renderer"
 import ReactDomServer from "react-dom/server"
+import { render } from "@testing-library/react"
 
 import {
   navigate,
@@ -23,24 +22,22 @@ import {
 
 const snapshot = ({ pathname, element }) => {
   const testHistory = createHistory(createMemorySource(pathname))
-  const wrapper = renderer.create(
+  const tree = render(
     <LocationProvider history={testHistory}>{element}</LocationProvider>
-  )
-  const tree = wrapper.toJSON()
+  ).asFragment()
   expect(tree).toMatchSnapshot()
   return tree
 }
 
 const runWithNavigation = (element, pathname = "/") => {
   const history = createHistory(createMemorySource(pathname))
-  const wrapper = renderer.create(
+  const tree = render(
     <LocationProvider history={history}>{element}</LocationProvider>
-  )
-
+  ).asFragment()
   const snapshot = () => {
-    expect(wrapper.toJSON()).toMatchSnapshot()
+    expect(tree).toMatchSnapshot()
   }
-  return { history, snapshot, wrapper }
+  return { history, snapshot }
 }
 
 const Home = () => <div>Home</div>
