@@ -1,3 +1,4 @@
 module.exports = {
-  "*.{js,ts,tsx,md}": [`npm run fix`],
+  "*.{js,ts,tsx}": [`npm run fix`],
+  "*.md": [`npm run format`],
 }

@@ -1,7 +1,7 @@
 {
   "name": "@gatsbyjs/reach-router",
   "version": "1.3.10-no-navigate.1",
-  "description": "Next generation Routing for React.",
+  "description": "Gatsby's fork to modernize reach-router",
   "source": "src/index.js",
   "main": "dist/index.js",
   "module": "dist/index.modern.mjs",
@@ -15,9 +15,9 @@
     "clean": "del-cli dist/*",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
-    "format": "prettier 'src/**/*.js' --write",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "format": "prettier \"**/*.{md,js}\" --write",
+    "lint": "eslint . --ignore-path .gitignore",
+    "lint:fix": "npm run lint -- --fix",
     "fix": "npm run format && npm run lint:fix",
     "postinstall": "husky install"
   },
@@ -49,6 +49,10 @@
     "react-dom": "experimental"
   },
   "author": "Ryan Florence",
+  "contributors": [
+    "Ty Hopp",
+    "LekoArts"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -56,7 +60,7 @@
   },
   "keywords": [
     "react",
-    "react router",
+    "reach router",
     "gatsby"
   ],
   "prettier": {

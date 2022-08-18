@@ -2,14 +2,14 @@
 const config = {
   verbose: true,
   globals: {
-    "__DEV__": true,
+    __DEV__: true,
   },
   testRegex: ".+\\.test\\.js$",
   testEnvironment: "jsdom",
   testEnvironmentOptions: {
-    url: "http://localhost"
+    url: "http://localhost",
   },
-  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.js"],
 }
 
 module.exports = config

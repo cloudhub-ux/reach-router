@@ -72,7 +72,6 @@ const FocusHandlerImpl = ({
 
   const focus = React.useCallback(() => {
     if (process.env.NODE_ENV === "test") {
-      // TODO: Still a problem?
       // getting cannot read property focus of null in the tests
       // and that bit of global `initialRenderRef` state causes problems
       return
