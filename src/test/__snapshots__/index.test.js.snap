@@ -715,18 +715,16 @@ exports[`trailing wildcard passes down wildcard name to the component as prop 1`
 `;
 
 exports[`transitions keeps the stack right on interrupted transitions 1`] = `
-<div
-  style={
-    Object {
-      "outline": "none",
-    }
-  }
-  tabIndex="-1"
->
-  <div>
-    Annual Report
+<DocumentFragment>
+  <div
+    style="outline: none;"
+    tabindex="-1"
+  >
+    <div>
+      Annual Report
+    </div>
   </div>
-</div>
+</DocumentFragment>
 `;
 
 exports[`transitions transitions pages 1`] = `
@@ -743,16 +741,14 @@ exports[`transitions transitions pages 1`] = `
 `;
 
 exports[`transitions transitions pages 2`] = `
-<div
-  style={
-    Object {
-      "outline": "none",
-    }
-  }
-  tabIndex="-1"
->
-  <div>
-    Reports 
+<DocumentFragment>
+  <div
+    style="outline: none;"
+    tabindex="-1"
+  >
+    <div>
+      Reports 
+    </div>
   </div>
-</div>
+</DocumentFragment>
 `;

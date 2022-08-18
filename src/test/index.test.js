@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import React from "react"
-import ReactDOM from "react-dom/client"
 import ReactDomServer from "react-dom/server"
 import { render, fireEvent, screen } from "@testing-library/react"
 
@@ -32,13 +31,10 @@ const snapshot = ({ pathname, element }) => {
 
 const runWithNavigation = (element, pathname = "/") => {
   const history = createHistory(createMemorySource(pathname))
-  const tree = render(
+  const { asFragment } = render(
     <LocationProvider history={history}>{element}</LocationProvider>
-  ).asFragment()
-  const snapshot = () => {
-    expect(tree).toMatchSnapshot()
-  }
-  return { history, snapshot }
+  )
+  return { asFragment, history }
 }
 
 const Home = () => <div>Home</div>
@@ -426,6 +422,7 @@ describe("links", () => {
   afterEach(() => {
     jest.resetAllMocks()
   })
+
   it("accepts an innerRef prop", () => {
     let ref
     const Page = () => <Link to="/" innerRef={node => (ref = node)} />
@@ -553,7 +550,7 @@ describe("links", () => {
     expect(window.history.replaceState).toHaveBeenCalledTimes(1)
   })
 
-  it.skip("calls history.pushState when link for current path is clicked with different state", async () => {
+  it("calls history.pushState when link for current path is clicked with different state", async () => {
     const TestPage = () => (
       <Link to="/" state={{ id: 1 }}>
         Go To Test
@@ -562,50 +559,38 @@ describe("links", () => {
     renderWithRouterWrapper(<TestPage path="/" />)
 
     fireEvent.click(screen.getByText("Go To Test"))
-    await navigate("/test", { state: { id: 2 } })
+    await navigate("/", { state: { id: 2 } })
     fireEvent.click(screen.getByText("Go To Test"))
-    /* Prev
 
-    ReactTestUtils.Simulate.click(a, { button: 0 })
-    await testHistory.navigate("/test", { state: { id: 2 } })
-    ReactTestUtils.Simulate.click(a, { button: 0 })
-
-    */
     expect(window.history.pushState).toHaveBeenCalledTimes(2)
   })
 })
 
-describe.skip("transitions", () => {
+describe("transitions", () => {
   it("transitions pages", async () => {
-    const {
-      snapshot,
-      history: { navigate },
-    } = runWithNavigation(
+    const { asFragment, history } = runWithNavigation(
       <Router>
         <Home path="/" />
         <Reports path="reports" />
       </Router>
     )
-    snapshot()
-    await navigate("/reports")
-    snapshot()
+    const firstRender = asFragment()
+    expect(firstRender).toMatchSnapshot()
+    await history.navigate("/reports")
+    expect(asFragment()).toMatchSnapshot()
   })
 
   it("keeps the stack right on interrupted transitions", async () => {
-    const {
-      snapshot,
-      history,
-      history: { navigate },
-    } = runWithNavigation(
+    const { asFragment, history } = runWithNavigation(
       <Router>
         <Home path="/" />
         <Reports path="reports" />
         <AnnualReport path="annual-report" />
       </Router>
     )
-    navigate("/reports")
-    await navigate("/annual-report")
-    snapshot()
+    history.navigate("/reports")
+    await history.navigate("/annual-report")
+    expect(asFragment()).toMatchSnapshot()
     expect(history.index === 1)
   })
 })
