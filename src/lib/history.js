@@ -60,6 +60,7 @@ const createHistory = (source, options) => {
     },
 
     navigate(to, { state, replace = false } = {}) {
+      console.log({to, state, replace })
       if (typeof to === "number") {
         source.history.go(to)
       } else {
@@ -114,6 +115,7 @@ const createMemorySource = (initialPath = "/") => {
         return states[index]
       },
       pushState(state, _, uri) {
+        console.log('called?')
         const [pathname, search = ""] = uri.split("?")
         index++
         stack.push({ pathname, search: search.length ? `?${search}` : search })
