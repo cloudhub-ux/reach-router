@@ -148,7 +148,8 @@ const getSource = () => {
   return canUseDOM ? window : createMemorySource()
 }
 
-const globalHistory = createHistory(getSource())
+const globalSource = getSource()
+const globalHistory = createHistory(globalSource)
 const { navigate } = globalHistory
 
 export { globalHistory, navigate, createHistory, createMemorySource }

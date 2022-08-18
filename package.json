@@ -30,6 +30,7 @@
     "prop-types": "^15.8.1"
   },
   "devDependencies": {
+    "@testing-library/react": "^13.3.0",
     "babel-preset-gatsby-package": "^2.20.0",
     "cross-env": "^7.0.3",
     "del-cli": "^5.0.0",
@@ -45,8 +46,7 @@
     "microbundle": "^0.15.0",
     "prettier": "^2.7.1",
     "react": "experimental",
-    "react-dom": "experimental",
-    "react-test-renderer": "experimental"
+    "react-dom": "experimental"
   },
   "author": "Ryan Florence",
   "license": "MIT",
