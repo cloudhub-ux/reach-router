@@ -419,30 +419,40 @@ describe("links", () => {
     let ref
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    function LinkWithCallback() {
-      React.useEffect(() => {
-        expect(ref).toBeInstanceOf(HTMLAnchorElement)
-      })
-
-      return <Link to="/" innerRef={node => (ref = node)} />
-    }
-    root.render(<LinkWithCallback />)
-    root.unmount()
+    const Page = () => <Link to="/" innerRef={node => (ref = node)} />
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <Page path="/" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    expect(ref).toBeInstanceOf(HTMLAnchorElement)
+    ReactTestUtils.act(() => {
+      root.unmount()
+    })
   })
 
   it("forwards refs", () => {
     let ref
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    function LinkWithCallback() {
-      React.useEffect(() => {
-        expect(ref).toBeInstanceOf(HTMLAnchorElement)
-      })
-
-      return <Link to="/" ref={node => (ref = node)} />
-    }
-    root.render(<LinkWithCallback />)
-    root.unmount()
+    const Page = () => <Link to="/" innerRef={node => (ref = node)} />
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <Page path="/" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    expect(ref).toBeInstanceOf(HTMLAnchorElement)
+    ReactTestUtils.act(() => {
+      root.unmount()
+    })
   })
 
   it("renders links with relative hrefs", () => {
@@ -511,20 +521,26 @@ describe("links", () => {
     const SomePage = () => <Link to="/reports">Go To Reports</Link>
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    root.render(
-      <LocationProvider>
-        <Router>
-          <SomePage path="/" />
-          <Reports path="/reports" />
-        </Router>
-      </LocationProvider>
-    )
-    try {
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <SomePage path="/" />
+            <Reports path="/reports" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    ReactTestUtils.act(() => {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
+    })
+    try {
       expect(window.history.pushState).toHaveBeenCalled()
     } finally {
-      root.unmount()
+      ReactTestUtils.act(() => {
+        root.unmount()
+      })
     }
   })
 
@@ -534,20 +550,26 @@ describe("links", () => {
     const SomePage = () => <Link to="/reports">Go To Reports</Link>
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    root.render(
-      <LocationProvider>
-        <Router>
-          <SomePage path="/" />
-          <Reports path="/reports" />
-        </Router>
-      </LocationProvider>
-    )
-    try {
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <SomePage path="/" />
+            <Reports path="/reports" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    ReactTestUtils.act(() => {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
+    })
+    try {
       expect(window.history.pushState).toHaveBeenCalled()
     } finally {
-      root.unmount()
+      ReactTestUtils.act(() => {
+        root.unmount()
+      })
     }
   })
 
@@ -555,19 +577,25 @@ describe("links", () => {
     const TestPage = () => <Link to="/">Go To Test</Link>
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    root.render(
-      <LocationProvider>
-        <Router>
-          <TestPage path="/" />
-        </Router>
-      </LocationProvider>
-    )
-    try {
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <TestPage path="/" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    ReactTestUtils.act(() => {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
+    })
+    try {
       expect(window.history.replaceState).toHaveBeenCalledTimes(1)
     } finally {
-      root.unmount()
+      ReactTestUtils.act(() => {
+        root.unmount()
+      })
     }
   })
   it("calls history.replaceState when link for current path is clicked with the same state", () => {
@@ -579,19 +607,25 @@ describe("links", () => {
     )
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    root.render(
-      <LocationProvider>
-        <Router>
-          <TestPage path="/" />
-        </Router>
-      </LocationProvider>
-    )
-    try {
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <TestPage path="/" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    ReactTestUtils.act(() => {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
+    })
+    try {
       expect(window.history.replaceState).toHaveBeenCalledTimes(1)
     } finally {
-      root.unmount()
+      ReactTestUtils.act(() => {
+        root.unmount()
+      })
     }
   })
   it("calls history.pushState when link for current path is clicked with different state", async () => {
@@ -602,21 +636,28 @@ describe("links", () => {
     )
     const div = document.createElement("div")
     const root = ReactDOM.createRoot(div)
-    root.render(
-      <LocationProvider>
-        <Router>
-          <TestPage path="/" />
-        </Router>
-      </LocationProvider>
-    )
-    try {
+    ReactTestUtils.act(() => {
+      root.render(
+        <LocationProvider>
+          <Router>
+            <TestPage path="/" />
+          </Router>
+        </LocationProvider>
+      )
+    })
+    ReactTestUtils.act(() => {
       const a = div.querySelector("a")
       ReactTestUtils.Simulate.click(a, { button: 0 })
-      await navigate("/", { state: { id: 2 } })
-      ReactTestUtils.Simulate.click(a, { button: 0 })
+      navigate("/", { state: { id: 2 } }).then(() => {
+        ReactTestUtils.Simulate.click(a, { button: 0 })
+      })
+    })
+    try {
       expect(window.history.pushState).toHaveBeenCalledTimes(2)
     } finally {
-      root.unmount()
+      ReactTestUtils.act(() => {
+        root.unmount()
+      })
     }
   })
 })

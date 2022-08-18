@@ -518,6 +518,21 @@ exports[`nested routers allows arbitrary Router nesting through context 1`] = `
 </div>
 `;
 
+exports[`nested routers allows arbitrary Router nesting through context 2`] = `
+<div
+  style={
+    Object {
+      "outline": "none",
+    }
+  }
+  tabIndex="-1"
+>
+  <div>
+    Home
+  </div>
+</div>
+`;
+
 exports[`passed props parses dynamic segments and passes to components 1`] = `
 <div
   style={
