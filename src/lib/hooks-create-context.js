@@ -1,33 +1,21 @@
-import * as React from "react"
+import { createServerContext } from "react"
 
-const createNamedContextClient = (name, defaultValue = null) => {
-  const Ctx = React.createContext(defaultValue)
-  Ctx.displayName = name
-  return Ctx
-}
-
-const ServerContextMap = new Map()
-
-const createNamedContextServer = (name, defaultValue = null) => {
-  let context = ServerContextMap.get(name)
-
-  if (context) {
-    return context
+// TODO: Conditionally create client context
+const createContext = (name, defaultValue = null) => {
+  if (!global.__SERVER_CONTEXT) {
+    global.__SERVER_CONTEXT = {}
   }
 
-  context = React.createServerContext(name, defaultValue)
-  ServerContextMap.set(name, context)
+  if (!global.__SERVER_CONTEXT[name]) {
+    global.__SERVER_CONTEXT[name] = createServerContext(name, defaultValue)
+  }
 
-  return context
+  return global.__SERVER_CONTEXT[name]
 }
 
-// TODO: Conditionally use client & server contexts
-export const createNamedContext = (name, defaultValue = null) =>
-  createNamedContextServer(name, defaultValue)
-
-export const BaseContext = createNamedContext("Base", {
+export const BaseContext = createContext("Base", {
   baseuri: "/",
   basepath: "/",
 })
-export const FocusContext = createNamedContext("Focus")
-export const LocationContext = createNamedContext("Location")
+export const FocusContext = createContext("Focus")
+export const LocationContext = createContext("Location")

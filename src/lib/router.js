@@ -2,7 +2,7 @@ import * as React from "react"
 import { BaseContext } from "./hooks-create-context"
 import { createRoute, pick } from "./utils"
 import { FocusHandler } from "./focus-handler"
-import { useBaseContext, useLocationContext } from "./hooks-context"
+import { useBaseContext, useLocationContext } from "./hooks-use-context"
 
 export const Router = props => {
   const baseContext = useBaseContext()

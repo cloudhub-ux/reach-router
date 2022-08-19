@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useLocationContext } from "./hooks-context"
+import { useLocationContext } from "./hooks-use-context"
 import { LocationProvider } from "./location-provider"
 
 export const Location = ({ children }) => {

@@ -1,4 +1,4 @@
-import { useLocationContext } from "../lib/hooks-context"
+import { useLocationContext } from "../lib/hooks-use-context"
 
 export const useLocation = () => {
   const context = useLocationContext()

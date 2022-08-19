@@ -3,7 +3,7 @@ import * as React from "react"
 import PropTypes from "prop-types"
 import { navigate } from "./history"
 import { resolve, startsWith, shouldNavigate, shallowCompare } from "./utils"
-import { useBaseContext, useLocationContext } from "./hooks-context"
+import { useBaseContext, useLocationContext } from "./hooks-use-context"
 
 let { forwardRef } = React
 

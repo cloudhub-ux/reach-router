@@ -2,7 +2,7 @@ import * as React from "react"
 import PropTypes from "prop-types"
 import { navigate } from "./history"
 import { resolve, insertParams } from "./utils"
-import { useBaseContext, useLocationContext } from "./hooks-context"
+import { useBaseContext, useLocationContext } from "./hooks-use-context"
 
 function RedirectRequest(uri) {
   this.uri = uri

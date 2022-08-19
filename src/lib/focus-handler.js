@@ -1,5 +1,5 @@
 import * as React from "react"
-import { useFocusContext } from "./hooks-context"
+import { useFocusContext } from "./hooks-use-context"
 import { FocusContext } from "./hooks-create-context"
 
 export const FocusHandler = ({ uri, location, component, ...domProps }) => {
