@@ -19,7 +19,9 @@
     "lint": "eslint . --ignore-path .gitignore",
     "lint:fix": "npm run lint -- --fix",
     "fix": "npm run format && npm run lint:fix",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "prepack": "pinst --disable",
+    "postpack": "pinst --enable"
   },
   "peerDependencies": {
     "react": "18.x",
@@ -44,6 +46,7 @@
     "jest": "^28.1.3",
     "jest-environment-jsdom": "^28.1.3",
     "microbundle": "^0.15.0",
+    "pinst": "^3.0.0",
     "prettier": "^2.7.1",
     "react": "experimental",
     "react-dom": "experimental"
