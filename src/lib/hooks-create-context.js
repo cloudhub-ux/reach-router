@@ -1,16 +1,17 @@
+/* eslint-disable no-undef */
+
 import { createServerContext } from "react"
 
-// TODO: Conditionally create client context
 const createContext = (name, defaultValue = null) => {
-  if (!global.__SERVER_CONTEXT) {
-    global.__SERVER_CONTEXT = {}
+  if (!globalThis.__SERVER_CONTEXT) {
+    globalThis.__SERVER_CONTEXT = {}
   }
 
-  if (!global.__SERVER_CONTEXT[name]) {
-    global.__SERVER_CONTEXT[name] = createServerContext(name, defaultValue)
+  if (!globalThis.__SERVER_CONTEXT[name]) {
+    globalThis.__SERVER_CONTEXT[name] = createServerContext(name, defaultValue)
   }
 
-  return global.__SERVER_CONTEXT[name]
+  return globalThis.__SERVER_CONTEXT[name]
 }
 
 export const BaseContext = createContext("Base", {
