@@ -1,8 +1,14 @@
-import { pick, match, resolve, insertParams, shallowCompare } from "./utils"
+import {
+  pick,
+  match,
+  resolve,
+  insertParams,
+  shallowCompare,
+} from "../../lib/utils"
 
 describe("pick", () => {
   test("pick root or dynamic", () => {
-    let routes = [
+    const routes = [
       { value: "root", path: "/" },
       { value: "dynamic", path: ":foo" },
     ]
@@ -41,12 +47,12 @@ describe("pick", () => {
   })
 
   test("dynamic segments + splat return value", () => {
-    let routes = [{ path: "/users/:userId/files/*" }]
+    const routes = [{ path: "/users/:userId/files/*" }]
     expect(pick(routes, "/users/ryan/files/some/deep/path")).toMatchSnapshot()
   })
 
   test("query strings", () => {
-    let routes = [{ path: "/users/:userId" }]
+    const routes = [{ path: "/users/:userId" }]
     expect(pick(routes, "/users/ryan?cool=stuff")).toMatchSnapshot()
   })
 })
@@ -117,7 +123,7 @@ describe("shallowCompare", () => {
   })
 })
 
-let routes = shuffle([
+const routes = shuffle([
   {
     value: "MainGroupMe",
     path: "/groups/main/users/me",
@@ -178,7 +184,7 @@ let routes = shuffle([
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {
-    let j = Math.floor(Math.random() * (i + 1))
+    const j = Math.floor(Math.random() * (i + 1))
     ;[a[i], a[j]] = [a[j], a[i]]
   }
   return a

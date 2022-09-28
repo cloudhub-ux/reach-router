@@ -1,7 +1,5 @@
 package.json
-/es
-/index.js
-/lib
-/umd
-website/dist
-
+dist
+node_modules
+.github
+.husky

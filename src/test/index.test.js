@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 import React from "react"
-import ReactDOM from "react-dom"
-import ReactTestUtils from "react-dom/test-utils"
-import renderer from "react-test-renderer"
-import { renderToString, renderToStaticMarkup } from "react-dom/server"
+import ReactDomServer from "react-dom/server"
+import { render, fireEvent, screen } from "@testing-library/react"
 
 import {
+  navigate,
+  globalHistory,
   createHistory,
   createMemorySource,
   Router,
@@ -16,45 +16,39 @@ import {
   isRedirect,
   ServerLocation,
   useLocation,
-  useNavigate,
   useParams,
   useMatch,
-} from "./index"
+} from "../index"
 
-let snapshot = ({ pathname, element }) => {
-  let testHistory = createHistory(createMemorySource(pathname))
-  let wrapper = renderer.create(
+const snapshot = ({ pathname, element }) => {
+  const testHistory = createHistory(createMemorySource(pathname))
+  const tree = render(
     <LocationProvider history={testHistory}>{element}</LocationProvider>
-  )
-  const tree = wrapper.toJSON()
+  ).asFragment()
   expect(tree).toMatchSnapshot()
   return tree
 }
 
-let runWithNavigation = (element, pathname = "/") => {
-  let history = createHistory(createMemorySource(pathname))
-  let wrapper = renderer.create(
+const runWithNavigation = (element, pathname = "/") => {
+  const history = createHistory(createMemorySource(pathname))
+  const { asFragment } = render(
     <LocationProvider history={history}>{element}</LocationProvider>
   )
-
-  const snapshot = () => {
-    expect(wrapper.toJSON()).toMatchSnapshot()
-  }
-  return { history, snapshot, wrapper }
+  return { asFragment, history }
 }
 
-let Home = () => <div>Home</div>
-let Dash = ({ children }) => <div>Dash {children}</div>
-let Group = ({ groupId, children }) => (
+const Home = () => <div>Home</div>
+const Dash = ({ children }) => <div>Dash {children}</div>
+const Group = ({ groupId, children }) => (
   <div>
     Group: {groupId}
     {children}
   </div>
 )
-let PropsPrinter = props => <pre>{JSON.stringify(props, null, 2)}</pre>
-let Reports = ({ children }) => <div>Reports {children}</div>
-let AnnualReport = () => <div>Annual Report</div>
-let PrintLocation = ({ location }) => (
+const PropsPrinter = props => <pre>{JSON.stringify(props, null, 2)}</pre>
+const Reports = ({ children }) => <div>Reports {children}</div>
+const AnnualReport = () => <div>Annual Report</div>
+const PrintLocation = ({ location }) => (
   <div>
     <div>location.pathname: [{location.pathname}]</div>
     <div>location.search: [{location.search}]</div>
@@ -405,29 +399,42 @@ describe("disrespect", () => {
   })
 })
 
+function renderWithRouterWrapper(ui, { history = globalHistory } = {}) {
+  return {
+    ...render(
+      <LocationProvider history={history}>
+        <Router>{ui}</Router>
+      </LocationProvider>
+    ),
+  }
+}
+
 describe("links", () => {
-  it("accepts an innerRef prop", done => {
-    let ref
-    let div = document.createElement("div")
-    ReactDOM.render(
-      <Link to="/" innerRef={node => (ref = node)} />,
-      div,
-      () => {
-        expect(ref).toBeInstanceOf(HTMLAnchorElement)
-        ReactDOM.unmountComponentAtNode(div)
-        done()
-      }
+  beforeEach(() => {
+    window.history.pushState = jest.fn(
+      window.history.pushState.bind(window.history)
+    )
+    window.history.replaceState = jest.fn(
+      window.history.replaceState.bind(window.history)
     )
   })
 
-  it("forwards refs", done => {
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it("accepts an innerRef prop", () => {
     let ref
-    let div = document.createElement("div")
-    ReactDOM.render(<Link to="/" ref={node => (ref = node)} />, div, () => {
-      expect(ref).toBeInstanceOf(HTMLAnchorElement)
-      ReactDOM.unmountComponentAtNode(div)
-      done()
-    })
+    const Page = () => <Link to="/" innerRef={node => (ref = node)} />
+    renderWithRouterWrapper(<Page path="/" />)
+    expect(ref).toBeInstanceOf(HTMLAnchorElement)
+  })
+
+  it("forwards refs", () => {
+    let ref
+    const Page = () => <Link to="/" innerRef={node => (ref = node)} />
+    renderWithRouterWrapper(<Page path="/" />)
+    expect(ref).toBeInstanceOf(HTMLAnchorElement)
   })
 
   it("renders links with relative hrefs", () => {
@@ -493,202 +500,98 @@ describe("links", () => {
   })
 
   it("calls history.pushState when clicked", () => {
-    const testSource = createMemorySource("/")
-    testSource.history.replaceState = jest.fn()
-    testSource.history.pushState = jest.fn()
-    const testHistory = createHistory(testSource)
     const SomePage = () => <Link to="/reports">Go To Reports</Link>
-    const div = document.createElement("div")
-    ReactDOM.render(
-      <LocationProvider history={testHistory}>
-        <Router>
-          <SomePage path="/" />
-          <Reports path="/reports" />
-        </Router>
-      </LocationProvider>,
-      div
+    renderWithRouterWrapper(
+      <>
+        <SomePage path="/" />
+        <Reports path="/reports" />
+      </>
     )
-    try {
-      const a = div.querySelector("a")
-      ReactTestUtils.Simulate.click(a, { button: 0 })
-      expect(testSource.history.pushState).toHaveBeenCalled()
-    } finally {
-      ReactDOM.unmountComponentAtNode(div)
-    }
+
+    fireEvent.click(screen.getByText("Go To Reports"))
+
+    expect(window.history.pushState).toHaveBeenCalled()
   })
 
   it("calls history.pushState when clicked -- even if navigated before", () => {
-    const testSource = createMemorySource("/#payload=...")
-    const { history } = testSource
-    history.replaceState = jest.fn(history.replaceState.bind(history))
-    history.pushState = jest.fn(history.pushState.bind(history))
-    const testHistory = createHistory(testSource)
-    // Simulate that payload in URL hash is being hidden
-    // before React renders anything ...
-    testHistory.navigate("/", { replace: true })
-    expect(testSource.history.replaceState).toHaveBeenCalled()
+    navigate("/", { replace: true })
+    expect(window.history.replaceState).toHaveBeenCalled()
+
     const SomePage = () => <Link to="/reports">Go To Reports</Link>
-    const div = document.createElement("div")
-    ReactDOM.render(
-      <LocationProvider history={testHistory}>
-        <Router>
-          <SomePage path="/" />
-          <Reports path="/reports" />
-        </Router>
-      </LocationProvider>,
-      div
+    renderWithRouterWrapper(
+      <>
+        <SomePage path="/" />
+        <Reports path="/reports" />
+      </>
     )
-    try {
-      const a = div.querySelector("a")
-      ReactTestUtils.Simulate.click(a, { button: 0 })
-      expect(testSource.history.pushState).toHaveBeenCalled()
-    } finally {
-      ReactDOM.unmountComponentAtNode(div)
-    }
+
+    fireEvent.click(screen.getByText("Go To Reports"))
+    expect(window.history.pushState).toHaveBeenCalled()
   })
 
   it("calls history.replaceState when link for current path is clicked without state", () => {
-    const testSource = createMemorySource("/test")
-    testSource.history.replaceState = jest.fn()
-    const testHistory = createHistory(testSource)
-    const TestPage = () => <Link to="/test">Go To Test</Link>
-    const div = document.createElement("div")
-    ReactDOM.render(
-      <LocationProvider history={testHistory}>
-        <Router>
-          <TestPage path="/test" />
-        </Router>
-      </LocationProvider>,
-      div
-    )
-    try {
-      const a = div.querySelector("a")
-      ReactTestUtils.Simulate.click(a, { button: 0 })
-      expect(testSource.history.replaceState).toHaveBeenCalledTimes(1)
-    } finally {
-      ReactDOM.unmountComponentAtNode(div)
-    }
+    const TestPage = () => <Link to="/">Go To Test</Link>
+    renderWithRouterWrapper(<TestPage path="/" />)
+
+    fireEvent.click(screen.getByText("Go To Test"))
+    expect(window.history.replaceState).toHaveBeenCalledTimes(1)
   })
+
   it("calls history.replaceState when link for current path is clicked with the same state", () => {
-    const testSource = createMemorySource("/test")
-    testSource.history.replaceState = jest.fn()
-    const testHistory = createHistory(testSource)
-    testHistory.navigate("/test", { state: { id: "123" } })
+    navigate("/", { state: { id: "123" } })
     const TestPage = () => (
-      <Link to="/test" state={{ id: "123" }}>
+      <Link to="/" state={{ id: "123" }}>
         Go To Test
       </Link>
     )
-    const div = document.createElement("div")
-    ReactDOM.render(
-      <LocationProvider history={testHistory}>
-        <Router>
-          <TestPage path="/test" />
-        </Router>
-      </LocationProvider>,
-      div
-    )
-    try {
-      const a = div.querySelector("a")
-      ReactTestUtils.Simulate.click(a, { button: 0 })
-      expect(testSource.history.replaceState).toHaveBeenCalledTimes(1)
-    } finally {
-      ReactDOM.unmountComponentAtNode(div)
-    }
+    renderWithRouterWrapper(<TestPage path="/" />)
+
+    fireEvent.click(screen.getByText("Go To Test"))
+    expect(window.history.replaceState).toHaveBeenCalledTimes(1)
   })
+
   it("calls history.pushState when link for current path is clicked with different state", async () => {
-    const testSource = createMemorySource("/test")
-    testSource.history.pushState = jest.fn(testSource.history.pushState)
-    const testHistory = createHistory(testSource)
     const TestPage = () => (
-      <Link to="/test" state={{ id: 1 }}>
+      <Link to="/" state={{ id: 1 }}>
         Go To Test
       </Link>
     )
-    const div = document.createElement("div")
-    ReactDOM.render(
-      <LocationProvider history={testHistory}>
-        <Router>
-          <TestPage path="/test" />
-        </Router>
-      </LocationProvider>,
-      div
-    )
-    try {
-      const a = div.querySelector("a")
-      ReactTestUtils.Simulate.click(a, { button: 0 })
-      await testHistory.navigate("/test", { state: { id: 2 } })
-      ReactTestUtils.Simulate.click(a, { button: 0 })
-      expect(testSource.history.pushState).toHaveBeenCalledTimes(2)
-    } finally {
-      ReactDOM.unmountComponentAtNode(div)
-    }
+    renderWithRouterWrapper(<TestPage path="/" />)
+
+    fireEvent.click(screen.getByText("Go To Test"))
+    await navigate("/", { state: { id: 2 } })
+    fireEvent.click(screen.getByText("Go To Test"))
+
+    expect(window.history.pushState).toHaveBeenCalledTimes(2)
   })
 })
 
 describe("transitions", () => {
   it("transitions pages", async () => {
-    const {
-      snapshot,
-      history: { navigate },
-    } = runWithNavigation(
+    const { asFragment, history } = runWithNavigation(
       <Router>
         <Home path="/" />
         <Reports path="reports" />
       </Router>
     )
-    snapshot()
-    await navigate("/reports")
-    snapshot()
+    const firstRender = asFragment()
+    expect(firstRender).toMatchSnapshot()
+    await history.navigate("/reports")
+    expect(asFragment()).toMatchSnapshot()
   })
 
   it("keeps the stack right on interrupted transitions", async () => {
-    const {
-      snapshot,
-      history,
-      history: { navigate },
-    } = runWithNavigation(
+    const { asFragment, history } = runWithNavigation(
       <Router>
         <Home path="/" />
         <Reports path="reports" />
         <AnnualReport path="annual-report" />
       </Router>
     )
-    navigate("/reports")
-    await navigate("/annual-report")
-    snapshot()
+    history.navigate("/reports")
+    await history.navigate("/annual-report")
+    expect(asFragment()).toMatchSnapshot()
     expect(history.index === 1)
-  })
-})
-
-describe("relative navigate prop", () => {
-  it("navigates relative", async () => {
-    let relativeNavigate
-
-    const User = ({ children, navigate, userId }) => {
-      relativeNavigate = navigate
-      return (
-        <div>
-          User:
-          {userId}
-          {children}
-        </div>
-      )
-    }
-
-    const Settings = () => <div>Settings</div>
-
-    const { snapshot } = runWithNavigation(
-      <Router>
-        <User path="user/:userId">
-          <Settings path="settings" />
-        </User>
-      </Router>,
-      "/user/123"
-    )
-    snapshot()
-    await relativeNavigate("settings")
-    snapshot()
   })
 })
 
@@ -735,31 +638,25 @@ describe("Match", () => {
 
 describe("location", () => {
   it("correctly parses pathname, search and hash fields", () => {
-    let testHistory = createHistory(
+    const testHistory = createHistory(
       createMemorySource("/print-location?it=works&with=queries")
     )
-    let wrapper = renderer.create(
-      <LocationProvider history={testHistory}>
-        <Router>
-          <PrintLocation path="/print-location" />
-        </Router>
-      </LocationProvider>
-    )
-    const tree = wrapper.toJSON()
+    const tree = renderWithRouterWrapper(
+      <PrintLocation path="/print-location" />,
+      { history: testHistory }
+    ).asFragment()
     expect(tree).toMatchSnapshot()
   })
 })
 
-// React 16.4 is buggy https://github.com/facebook/react/issues/12968
-// so some tests are skipped
 describe("ServerLocation", () => {
-  let NestedRouter = () => (
+  const NestedRouter = () => (
     <Router>
       <Home path="/home" />
       <Redirect from="/" to="./home" />
     </Router>
   )
-  let App = () => (
+  const App = () => (
     <Router>
       <Home path="/" />
       <Group path="/groups/:groupId" />
@@ -769,9 +666,9 @@ describe("ServerLocation", () => {
     </Router>
   )
 
-  it.skip("works", () => {
+  it("works", () => {
     expect(
-      renderToString(
+      ReactDomServer.renderToString(
         <ServerLocation url="/">
           <App />
         </ServerLocation>
@@ -779,7 +676,7 @@ describe("ServerLocation", () => {
     ).toMatchSnapshot()
 
     expect(
-      renderToString(
+      ReactDomServer.renderToString(
         <ServerLocation url="/groups/123">
           <App />
         </ServerLocation>
@@ -787,11 +684,11 @@ describe("ServerLocation", () => {
     ).toMatchSnapshot()
   })
 
-  test.skip("redirects", () => {
-    let redirectedPath = "/g/123"
+  it("redirects", () => {
+    const redirectedPath = "/g/123"
     let markup
     try {
-      markup = renderToString(
+      markup = ReactDomServer.renderToString(
         <ServerLocation url={redirectedPath}>
           <App />
         </ServerLocation>
@@ -803,11 +700,11 @@ describe("ServerLocation", () => {
     expect(markup).not.toBeDefined()
   })
 
-  test.skip("nested redirects", () => {
-    let redirectedPath = "/nested"
+  it("nested redirects", () => {
+    const redirectedPath = "/nested"
     let markup
     try {
-      markup = renderToString(
+      markup = ReactDomServer.renderToString(
         <ServerLocation url={redirectedPath}>
           <App />
         </ServerLocation>
@@ -819,8 +716,8 @@ describe("ServerLocation", () => {
     expect(markup).not.toBeDefined()
   })
 
-  test("location.search", () => {
-    let markup = renderToStaticMarkup(
+  it("location.search", () => {
+    const markup = ReactDomServer.renderToStaticMarkup(
       <ServerLocation url="/print-location?it=works">
         <App />
       </ServerLocation>
@@ -906,52 +803,10 @@ describe("hooks", () => {
       }
 
       expect(() => {
-        renderToString(<Fixture />)
+        ReactDomServer.renderToString(<Fixture />)
       }).toThrow(
         "useLocation hook was used but a LocationContext.Provider was not found in the parent tree. Make sure this is used in a component that is a child of Router"
       )
-    })
-  })
-
-  describe("useNavigate", () => {
-    it("navigates relative", async () => {
-      let navigate
-
-      const Foo = () => {
-        navigate = useNavigate()
-        return `IF_THIS_IS_IN_SNAPSHOT_BAAAAADDDDDDDD`
-      }
-
-      const Bar = () => `THIS_IS_WHAT_WE_WANT_TO_SEE_IN_SNAPSHOT`
-
-      const { snapshot } = runWithNavigation(
-        <Router>
-          <Foo path="/foo" />
-          <Bar path="/bar" />
-        </Router>,
-        "/foo"
-      )
-      snapshot()
-      await navigate("/bar")
-      snapshot()
-    })
-    it("is equals to props.navigate for route components", async () => {
-      let navigate
-      let propNavigate
-
-      const Foo = props => {
-        navigate = useNavigate()
-        propNavigate = props.navigate
-        return `Foo`
-      }
-
-      runWithNavigation(
-        <Router>
-          <Foo path="/foo" />
-        </Router>,
-        "/foo"
-      )
-      expect(navigate).toBe(propNavigate)
     })
   })
 
@@ -982,7 +837,7 @@ describe("hooks", () => {
         return ``
       }
 
-      const { snapshot } = runWithNavigation(
+      runWithNavigation(
         <Router>
           <Foo path="/foo" />
         </Router>,
@@ -1004,7 +859,7 @@ describe("hooks", () => {
 
       const Bar = () => ""
 
-      const { snapshot } = runWithNavigation(
+      runWithNavigation(
         <Router>
           <Foo path="/foo">
             <Bar path="/bar" />
