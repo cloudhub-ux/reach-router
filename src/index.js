@@ -15,7 +15,7 @@ export {
   startsWith,
   pick,
   resolve,
-  match as matchPath,
+  match,
   insertParams,
   validateRedirect,
   shallowCompare,
