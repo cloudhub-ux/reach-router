@@ -2,7 +2,7 @@
 
 This is a **fork** made by [Gatsby](https://www.gatsbyjs.com) to make changes to [`reach-router`](https://reach.tech/router/) like:
 
-- Support for React 17 & 18
+- Support for React 18 **only**
 - Support for React Server Components
 - Publish as CJS and ESM
 
