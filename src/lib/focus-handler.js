@@ -1,15 +1,10 @@
 import * as React from "react"
-import { useFocusContext } from "./hooks-use-context"
-import { FocusContext } from "./hooks-create-context"
 
 export const FocusHandler = ({ uri, location, component, ...domProps }) => {
-  const requestFocus = useFocusContext()
-
   return (
     <FocusHandlerImpl
       {...domProps}
       component={component}
-      requestFocus={requestFocus}
       uri={uri}
       location={location}
     />
@@ -21,17 +16,22 @@ let focusHandlerCount = 0
 const FocusHandlerImpl = ({
   children,
   style,
-  requestFocus,
   component: Comp = "div",
   uri,
   location,
   ...domProps
 }) => {
-  let node = React.useRef()
+  const focusWrapperRef = React.useRef()
   const initialRenderRef = React.useRef(true)
   const uriRef = React.useRef(uri)
   const pathnameRef = React.useRef(location.pathname)
-  const shouldFocusRef = React.useRef(true)
+  const shouldFocusRef = React.useRef(false)
+
+  const _requestFocus = requestNode => {
+    if (shouldFocusRef.current && requestNode) {
+      requestNode.focus()
+    }
+  }
 
   // Initial mount/unmount logic
   React.useEffect(() => {
@@ -72,41 +72,26 @@ const FocusHandlerImpl = ({
 
   const focus = React.useCallback(() => {
     if (process.env.NODE_ENV === "test") {
-      // getting cannot read property focus of null in the tests
-      // and that bit of global `initialRenderRef` state causes problems
+      // TODO: Check if change for tests still needed
       return
     }
 
-    if (requestFocus) {
-      requestFocus(node.current)
+    // Don't focus the <Comp /> on initial render
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false
     } else {
-      if (initialRenderRef.current) {
-        initialRenderRef.current = false
-      } else if (node) {
-        // React polyfills [autofocus] and it fires earlier than cDM, so we were stealing focus away, this line prevents that.
-        if (!node.current.contains(document.activeElement)) {
-          node.current.focus()
-        }
-      }
+      _requestFocus(focusWrapperRef.current)
     }
   }, [])
-
-  const _requestFocus = node => {
-    if (!shouldFocusRef.current && node) {
-      node.current.focus()
-    }
-  }
 
   return (
     <Comp
       style={{ outline: "none", ...style }}
       tabIndex="-1"
-      ref={n => (node = n)}
+      ref={focusWrapperRef}
       {...domProps}
     >
-      <FocusContext.Provider value={_requestFocus}>
-        {children}
-      </FocusContext.Provider>
+      {children}
     </Comp>
   )
 }

@@ -8,7 +8,10 @@ const createServerContext = (name, defaultValue = null) => {
   }
 
   if (!globalThis.__SERVER_CONTEXT[name]) {
-    globalThis.__SERVER_CONTEXT[name] = React.createServerContext(name, defaultValue)
+    globalThis.__SERVER_CONTEXT[name] = React.createServerContext(
+      name,
+      defaultValue
+    )
   }
 
   return globalThis.__SERVER_CONTEXT[name]
@@ -26,5 +29,4 @@ export const BaseContext = createServerOrClientContext("Base", {
   baseuri: "/",
   basepath: "/",
 })
-export const FocusContext = createServerOrClientContext("Focus")
 export const LocationContext = createServerOrClientContext("Location")

@@ -28,13 +28,5 @@ export {
   createMemorySource,
 } from "./lib/history"
 
-export {
-  BaseContext,
-  FocusContext,
-  LocationContext,
-} from "./lib/hooks-create-context"
-export {
-  useBaseContext,
-  useFocusContext,
-  useLocationContext,
-} from "./lib/hooks-use-context"
+export { BaseContext, LocationContext } from "./lib/hooks-create-context"
+export { useBaseContext, useLocationContext } from "./lib/hooks-use-context"
