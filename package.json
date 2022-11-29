@@ -5,9 +5,6 @@
   "source": "src/index.js",
   "main": "dist/index.js",
   "module": "dist/index.modern.mjs",
-  "publishConfig": {
-    "tag": "v2.0"
-  },
   "files": [
     "dist/*"
   ],
