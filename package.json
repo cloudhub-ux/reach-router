@@ -1,6 +1,6 @@
 {
   "name": "@gatsbyjs/reach-router",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Gatsby's fork to modernize reach-router",
   "source": "src/index.js",
   "main": "dist/index.js",
