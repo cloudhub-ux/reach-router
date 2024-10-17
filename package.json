@@ -1,5 +1,5 @@
 {
-  "name": "@gatsbyjs/reach-router",
+  "name": "@cloudhub-ux/reach-router",
   "version": "2.0.1",
   "description": "Gatsby's fork to modernize reach-router",
   "source": "src/index.js",
@@ -55,7 +55,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gatsbyjs/reach-router.git"
+    "url": "git+https://github.com/cloudhub-ux/reach-router.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "keywords": [
     "react",
@@ -68,7 +71,7 @@
     "arrowParens": "avoid"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/reach-router/issues"
+    "url": "https://github.com/cloudhub-ux/reach-router/issues"
   },
-  "homepage": "https://github.com/gatsbyjs/reach-router#readme"
+  "homepage": "https://github.com/cloudhub-ux/reach-router#readme"
 }
