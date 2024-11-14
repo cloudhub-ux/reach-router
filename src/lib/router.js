@@ -6,7 +6,7 @@ import { useBaseContext, useLocationContext } from "./hooks-use-context"
 
 export const Router = props => {
   const baseContext = useBaseContext()
-  const locationContext = useLocationContext()
+  const { navigate, ...locationContext } = useLocationContext()
 
   return <RouterImpl {...baseContext} {...locationContext} {...props} />
 }
