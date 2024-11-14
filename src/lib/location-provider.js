@@ -21,7 +21,7 @@ export const LocationProvider = withErrorBoundary(
         Promise.resolve().then(() => {
           requestAnimationFrame(() => {
             if (!isCancelled) {
-              setContext({ location })
+              setContext({ location, navigate })
             }
           })
         })
