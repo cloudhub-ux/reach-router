@@ -8,7 +8,7 @@ export const LocationProvider = withErrorBoundary(
   ({ history = globalHistory, children }) => {
     const { location } = history
 
-    const [context, setContext] = React.useState({ location })
+    const [context, setContext] = React.useState({ location, navigate })
     const [error] = useErrorBoundary()
 
     React.useEffect(() => {
