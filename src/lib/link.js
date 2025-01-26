@@ -39,6 +39,7 @@ export const Link = forwardRef(({ innerRef, ...props }, ref) => {
             const { key, ...restState } = { ...location.state }
             shouldReplace = shallowCompare({ ...state }, restState)
           }
+
           navigate(href, {
             state,
             replace: shouldReplace,
